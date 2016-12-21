@@ -1,0 +1,82 @@
+#ifndef PGLANG_AUNIQUE_PTR_HPP_INCLUDED
+#define PGLANG_AUNIQUE_PTR_HPP_INCLUDED
+
+
+#include<cstddef>
+#include<utility>
+
+
+
+
+namespace pglang{
+
+
+template<typename  T>
+class
+aunique_ptr
+{
+  T*  data;
+
+public:
+  aunique_ptr(T*  new_data=nullptr): data(new_data){}
+  aunique_ptr(      aunique_ptr&&  rhs) noexcept: data(nullptr){*this = std::move(rhs);}
+  aunique_ptr(const aunique_ptr&   rhs) noexcept: data(nullptr){*this =          (rhs);}
+ ~aunique_ptr()
+  {
+    reset();
+  }
+
+
+  operator bool() const{return data;}
+
+  aunique_ptr&  operator=(aunique_ptr&&  rhs)
+  {
+    reset(rhs.data)         ;
+          rhs.data = nullptr;
+
+    return *this;
+  }
+
+  aunique_ptr&  operator=(const aunique_ptr&  rhs)
+  {
+    reset(rhs? new T(*rhs):nullptr); 
+
+    return *this;
+  }
+
+
+  T&  operator*()  const{return *data;}
+  T*  operator->() const{return  data;}
+
+  T*  get() const{return data;}
+
+  void  reset(T*  new_data=nullptr)
+  {
+    delete data           ;
+           data = new_data;
+  }
+
+  T* release()
+  {
+    auto  ptr = data          ;
+                data = nullptr;
+
+    return ptr;
+  }
+
+  void  swap(aunique_ptr&  rhs)
+  {
+    std::swap(data,rhs.data);
+  }
+
+};
+
+
+}
+
+
+#endif
+
+
+
+
