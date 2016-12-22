@@ -31,6 +31,8 @@ Function
 
   std::vector<Parameter>  vardecl_list;
 
+  size_t  entry_point;
+
   aunique_ptr<vm::Binary>  binary;
 
   static constexpr size_t  get_size(){return 4;}
@@ -39,6 +41,7 @@ Function
   Literal  execute(const ArgumentList&  args);
 
   Struct  make_stack_struct() const;
+  Struct  make_literaldata_struct() const;
 
   void  declare(Type&&  type,  std::string&&  name, Literal&&  lit=Literal());
   void  declare(std::string&&  name, Literal&&  lit);

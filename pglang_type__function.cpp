@@ -41,17 +41,55 @@ make_stack_struct() const
 }
 
 
+Struct
+Function::
+make_literaldata_struct() const
+{
+  Struct  st;
+
+    for(auto&  vardecl: vardecl_list)
+    {
+        switch(vardecl.literal.get_kind())
+        {
+      case(LiteralKind::string):
+      case(LiteralKind::u16string):
+      case(LiteralKind::u32string):
+      case(LiteralKind::array):
+          st.append(Type(vardecl.type),std::string(vardecl.name));
+          break;
+      default:;
+        }
+    }
+
+
+  return std::move(st);
+}
+
+
 Literal
 Function::
 execute(const ArgumentList&  args)
 {
-  auto  st = make_stack_struct();
+  signature.print();
 
-  st.print();
+  auto  stst = make_stack_struct();
+  auto  ldst = make_literaldata_struct();
+
+  printf("\nstack{\n");
+
+  stst.print();
+
+  printf("\n}\n\n");
+
+  printf("literaldata{\n");
+
+  ldst.print();
+
+  printf("\n}\n\n");
 
   vm::Memory  mem(1024);
 
-  vm::Context  ctx(mem,st,args);
+  vm::Context  ctx(mem,stst,args);
 
   return Literal();
 }

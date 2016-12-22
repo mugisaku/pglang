@@ -36,12 +36,12 @@ Type::Type(Float64&&  f): kind(TypeKind::float64), name("float64_t"){}
 
 
 Type::
-Type(Type&&  type, size_t  array_size_):
-book(type.get_book()),
+Type(Array&&  arr):
+book(arr.type->get_book()),
 kind(TypeKind::array),
-array_size(array_size_),
-name(type.get_name()+"["+std::to_string(array_size_)+"]"),
-referred(new Type(std::move(type)))
+array_size(arr.size),
+name(arr.type->get_name()+"["+std::to_string(arr.size)+"]"),
+referred(arr.type)
 {
 }
 

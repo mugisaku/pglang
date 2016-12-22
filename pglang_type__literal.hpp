@@ -78,6 +78,8 @@ public:
 
   void  clear();
 
+  void  print() const;
+
 };
 
 

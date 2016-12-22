@@ -8,6 +8,24 @@
 namespace pglang{
 
 
+void
+Signature::
+print() const
+{
+  printf("%s(",return_type.get_name().data());
+
+    for(auto&  p: parameter_list)
+    {
+      p.print();
+
+      printf(", ");
+    }
+
+
+  printf(")");
+}
+
+
 }
 
 

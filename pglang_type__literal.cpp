@@ -146,16 +146,16 @@ get_default_type() const
       t = Type(Float32());
       break;
   case(LiteralKind::string):
-      t = Type(Pointer(Char8()));
+      t = Type(Array(Char8(),data.s.size()+1));
       break;
   case(LiteralKind::u16string):
-      t = Type(Pointer(Char16()));
+      t = Type(Array(Char16(),data.u16s.size()+1));
       break;
   case(LiteralKind::u32string):
-      t = Type(Pointer(Char32()));
+      t = Type(Array(Char32(),data.u32s.size()+1));
       break;
   case(LiteralKind::array):
-      t = Type(Pointer(Char8()));
+      t = Type(Array(Type(Int()),data.a.size()));
       break;
     }
 
@@ -193,6 +193,64 @@ clear()
 
   kind = LiteralKind::null;
 }
+
+
+void
+Literal::
+print() const
+{
+    switch(kind)
+    {
+  case(LiteralKind::null):
+      break;
+  case(LiteralKind::integer):
+      printf("%d",data.i);
+      break;
+  case(LiteralKind::fp_number):
+      printf("%f",data.f);
+      break;
+  case(LiteralKind::string):
+      printf("\"%s\"",data.s.data());
+      break;
+  case(LiteralKind::u16string):
+      printf("u\"");
+
+        for(auto  c: data.u16s)
+        {
+          printf("0X%02X,",c);
+        }
+
+
+      printf("\"");
+      break;
+  case(LiteralKind::u32string):
+      printf("U\"");
+
+        for(auto  c: data.u32s)
+        {
+          printf("0X%04X,",c);
+        }
+
+
+      printf("\"");
+      break;
+  case(LiteralKind::array):
+      printf("{");
+
+        for(auto&  lit: data.a)
+        {
+          lit.print();
+
+          printf(",");
+        }
+
+
+      printf("}");
+      break;
+    }
+}
+
+
 
 
 }

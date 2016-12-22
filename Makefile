@@ -61,6 +61,7 @@ OBJ =                       \
   pglang_type__struct.o     \
   pglang_type__union.o      \
   pglang_type__enum.o       \
+  pglang_type__parameter.o  \
   pglang_type__signature.o  \
   pglang_type__function.o   \
   pglang_type__literal.o    \

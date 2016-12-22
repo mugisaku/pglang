@@ -66,6 +66,7 @@ TypeKind
 
 struct Pointer;
 struct Reference;
+struct Array;
 struct StructDeclaration;
 struct EnumDeclaration;
 struct UnionDeclaration;
@@ -81,9 +82,9 @@ Type
 
   std::string  name;
 
-  size_t  array_size;
-
   aunique_ptr<Type>  referred;
+
+  size_t  array_size;
 
   union Data{
     char*    str;
@@ -115,7 +116,7 @@ public:
   Type(Float16&&  f);
   Type(Float32&&  f);
   Type(Float64&&  f);
-  Type(Type&&  type, size_t  array_size_);
+  Type(Array&&  arr);
   Type(Pointer&&  ptr);
   Type(Reference&&  ref);
   Type(const StructDeclaration&  decl);
@@ -192,6 +193,20 @@ Reference
   Type*  type;
 
   Reference(Type&&  t): type(new Type(std::move(t))){}
+
+};
+
+
+struct
+Array
+{
+  Type*  type;
+
+  size_t  size;
+
+  Array(Type&&  t, size_t  size_):
+  type(new Type(std::move(t))),
+  size(size_) {}
 
 };
 
