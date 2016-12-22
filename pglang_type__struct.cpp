@@ -9,9 +9,8 @@ namespace pglang{
 
 
 StructMember::
-StructMember(Type&&  type_, std::string&&  name_, size_t  offset_):
-type(std::move(type_)),
-name(std::move(name_))
+StructMember(Type&&  type_, std::string&&  name_, Literal&&  lit, size_t  offset_):
+Parameter(std::move(type_),std::move(name_),std::move(lit))
 {
   auto  v = type.get_alignment_size();
 
@@ -43,13 +42,13 @@ alignment_size(0)
 
 void
 Struct::
-append(Type&&  type, std::string&&  name)
+append(Type&&  type, std::string&&  name, Literal&&  lit)
 {
   alignment_size = std::max(alignment_size,type.get_alignment_size());
 
   size_t  offset = (member_list.size()? member_list.back().get_tail_offset():0);
 
-  member_list.emplace_back(std::move(type),std::move(name),offset);
+  member_list.emplace_back(std::move(type),std::move(name),std::move(lit),offset);
 
 
   auto  tail_offset = member_list.back().get_tail_offset();

@@ -30,6 +30,8 @@ public:
 
   void  resize(size_t  new_size);
 
+  uint8_t*  get_pointer(int  ptr) const;
+
   int  get8(  int  ptr) const;
   int  get8u( int  ptr) const;
   int  get16( int  ptr) const;

@@ -107,6 +107,14 @@ resize(size_t  new_size)
 }
 
 
+uint8_t*
+Memory::
+get_pointer(int  ptr) const
+{
+  return &array[ptr];
+}
+
+
 int
 Memory::
 get8(int  ptr) const

@@ -11,6 +11,8 @@ namespace pglang{
 
 
 Literal::Literal():                          kind(LiteralKind::null){}
+Literal::Literal(nullptr_t  nulptr):         kind(LiteralKind::nullptr_){}
+Literal::Literal(bool  b):                   kind(b? LiteralKind::true_:LiteralKind::false_){}
 Literal::Literal(int  i):                    kind(LiteralKind::integer){data.i = i;}
 Literal::Literal(double  f):                 kind(LiteralKind::fp_number){data.f = f;}
 Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data) std::string(std::move(s));}
@@ -55,6 +57,9 @@ operator=(Literal&&  rhs) noexcept
     switch(kind)
     {
   case(LiteralKind::null):
+  case(LiteralKind::nullptr_):
+  case(LiteralKind::true_):
+  case(LiteralKind::false_):
       break;
   case(LiteralKind::integer):
       data.i = rhs.data.i;
@@ -92,6 +97,9 @@ operator=(const Literal&   rhs)
     switch(kind)
     {
   case(LiteralKind::null):
+  case(LiteralKind::nullptr_):
+  case(LiteralKind::true_):
+  case(LiteralKind::false_):
       break;
   case(LiteralKind::integer):
       data.i = rhs.data.i;
@@ -139,6 +147,13 @@ get_default_type() const
     {
   case(LiteralKind::null):
       break;
+  case(LiteralKind::nullptr_):
+      t = Type(NullPtr());
+      break;
+  case(LiteralKind::true_):
+  case(LiteralKind::false_):
+      t = Type(Bool());
+      break;
   case(LiteralKind::integer):
       t = Type(Int());
       break;
@@ -171,9 +186,10 @@ clear()
     switch(kind)
     {
   case(LiteralKind::null):
-      break;
+  case(LiteralKind::nullptr_):
+  case(LiteralKind::true_):
+  case(LiteralKind::false_):
   case(LiteralKind::integer):
-      break;
   case(LiteralKind::fp_number):
       break;
   case(LiteralKind::string):
@@ -195,6 +211,75 @@ clear()
 }
 
 
+void*
+Literal::
+write(void*  ptr) const
+{
+    switch(kind)
+    {
+  case(LiteralKind::null):
+      break;
+  case(LiteralKind::nullptr_):
+      break;
+  case(LiteralKind::true_):
+      break;
+  case(LiteralKind::false_):
+      break;
+  case(LiteralKind::integer):
+      break;
+  case(LiteralKind::fp_number):
+      break;
+  case(LiteralKind::string):
+    {
+      auto  p = static_cast<uint8_t*>(ptr);
+
+        for(auto  c: data.s)
+        {
+          *p++ = c;
+        }
+
+
+      *p++ = 0;
+
+      ptr = static_cast<void*>(p);
+    } break;
+  case(LiteralKind::u16string):
+    {
+      auto  p = static_cast<uint16_t*>(ptr);
+
+        for(auto  c: data.s)
+        {
+          *p++ = c;
+        }
+
+
+      *p++ = 0;
+
+      ptr = static_cast<void*>(p);
+    } break;
+  case(LiteralKind::u32string):
+    {
+      auto  p = static_cast<uint32_t*>(ptr);
+
+        for(auto  c: data.s)
+        {
+          *p++ = c;
+        }
+
+
+      *p++ = 0;
+
+      ptr = static_cast<void*>(p);
+    } break;
+  case(LiteralKind::array):
+      break;
+    }
+
+
+  return ptr;
+}
+
+
 void
 Literal::
 print() const
@@ -202,6 +287,15 @@ print() const
     switch(kind)
     {
   case(LiteralKind::null):
+      break;
+  case(LiteralKind::nullptr_):
+      printf("nullptr");
+      break;
+  case(LiteralKind::true_):
+      printf("true");
+      break;
+  case(LiteralKind::false_):
+      printf("false");
       break;
   case(LiteralKind::integer):
       printf("%d",data.i);

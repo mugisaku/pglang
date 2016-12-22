@@ -19,6 +19,9 @@ enum class
 LiteralKind
 {
   null,
+  nullptr_,
+  true_,
+  false_,
   integer,
   fp_number,
   string,
@@ -57,6 +60,8 @@ Literal
 
 public:
    Literal();
+   Literal(nullptr_t  nulptr);
+   Literal(bool  b);
    Literal(int  i);
    Literal(double  f);
    Literal(std::string&&  s);
@@ -77,6 +82,8 @@ public:
   Type  get_default_type() const;
 
   void  clear();
+
+  void*  write(void*  ptr) const;
 
   void  print() const;
 

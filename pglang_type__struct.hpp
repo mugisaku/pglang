@@ -5,6 +5,7 @@
 #include<string>
 #include<vector>
 #include"pglang_type.hpp"
+#include"pglang_type__parameter.hpp"
 #include"aunique_ptr"
 
 
@@ -14,15 +15,9 @@ namespace pglang{
 
 
 struct
-StructMember
+StructMember: public Parameter
 {
-  Type  type;
-
-  std::string  name;
-
-  size_t  offset;
-
-  StructMember(Type&&  type_, std::string&&  name_, size_t  offset_=0);
+  StructMember(Type&&  type_, std::string&&  name_, Literal&&  lit, size_t  offset);
 
   size_t  get_tail_offset() const;
 
@@ -39,7 +34,7 @@ Struct
 
   Struct();
 
-  void  append(Type&&  type, std::string&&  name);
+  void  append(Type&&  type, std::string&&  name, Literal&&  lit=Literal());
 
   size_t  get_size() const;
   size_t  get_alignment_size() const;

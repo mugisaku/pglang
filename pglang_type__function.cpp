@@ -55,7 +55,7 @@ make_literaldata_struct() const
       case(LiteralKind::u16string):
       case(LiteralKind::u32string):
       case(LiteralKind::array):
-          st.append(Type(vardecl.type),std::string(vardecl.name));
+          st.append(Type(vardecl.type),std::string(vardecl.name),Literal(vardecl.literal));
           break;
       default:;
         }
@@ -87,9 +87,21 @@ execute(const ArgumentList&  args)
 
   printf("\n}\n\n");
 
-  vm::Memory  mem(1024);
+    if(binary)
+    {
+      vm::Memory  mem(1024*1024);
 
-  vm::Context  ctx(mem,stst,args);
+        for(auto&  m: ldst.member_list)
+        {
+          auto&  lit = m.literal;
+
+          lit.write(mem.get_pointer(m.offset));
+        }
+
+
+      vm::Context  ctx(mem,stst,args);
+    }
+
 
   return Literal();
 }
