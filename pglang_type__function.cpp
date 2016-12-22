@@ -10,11 +10,19 @@
 namespace pglang{
 
 
-Literal
+
+
+Struct
 Function::
-execute(const ArgumentList&  args)
+make_stack_struct() const
 {
   Struct  st;
+
+    for(auto&  vardecl: vardecl_list)
+    {
+      st.append(Type(vardecl.type),std::string(vardecl.name));
+    }
+
 
   st.append(Type(UInt32()),std::string("previous_bp"));
   st.append(Type(UInt32()),std::string("previous_sp"));
@@ -28,21 +36,40 @@ execute(const ArgumentList&  args)
 
   st.append(Type(signature.return_type),std::string("return_value"));
 
+
+  return std::move(st);
+}
+
+
+Literal
+Function::
+execute(const ArgumentList&  args)
+{
+  auto  st = make_stack_struct();
+
   st.print();
-
-    if(args.size() != signature.parameter_list.size())
-    {
-      printf("仮引数と実引数の個数が一致しません\n");
-
-      throw;
-    }
-
 
   vm::Memory  mem(1024);
 
   vm::Context  ctx(mem,st,args);
 
   return Literal();
+}
+
+
+void
+Function::
+declare(Type&&  type, std::string&&  name, Literal&&  lit)
+{
+  vardecl_list.emplace_back(std::move(type),std::move(name),std::move(lit));
+}
+
+
+void
+Function::
+declare(std::string&&  name, Literal&&  lit)
+{
+  vardecl_list.emplace_back(std::move(name),std::move(lit));
 }
 
 

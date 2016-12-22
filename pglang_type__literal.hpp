@@ -5,6 +5,7 @@
 #include<cstdint>
 #include<string>
 #include<vector>
+#include"pglang_type.hpp"
 
 
 
@@ -21,7 +22,10 @@ LiteralKind
   integer,
   fp_number,
   string,
+  u16string,
+  u32string,
   array,
+  identifier,
 
 };
 
@@ -34,6 +38,8 @@ LiteralData
 {
   int                   i;
   std::string           s;
+  std::u16string        u16s;
+  std::u32string        u32s;
   double                f;
   std::vector<Literal>  a;
 
@@ -54,6 +60,8 @@ public:
    Literal(int  i);
    Literal(double  f);
    Literal(std::string&&  s);
+   Literal(std::u16string&&  u16s);
+   Literal(std::u32string&&  u32s);
    Literal(std::vector<Literal>&&  a);
    Literal(      Literal&&  rhs) noexcept;
    Literal(const Literal&   rhs)         ;
@@ -65,6 +73,8 @@ public:
   const LiteralData*  operator->() const;
 
   LiteralKind  get_kind() const;
+
+  Type  get_default_type() const;
 
   void  clear();
 

@@ -6,6 +6,7 @@
 #include<string>
 #include<vector>
 #include"pglang_type.hpp"
+#include"pglang_type__literal.hpp"
 
 
 
@@ -20,9 +21,17 @@ Parameter
 
   std::string  name;
 
-  Parameter(Type&&  type_, std::string&&  name_):
+  Literal  literal;
+
+  Parameter(Type&&  type_, std::string&&  name_, Literal&&  lit=Literal()):
   type(std::move(type_)),
-  name(std::move(name_)){}
+  name(std::move(name_)),
+  literal(std::move(lit)){}
+
+  Parameter(std::string&&  name_, Literal&&  lit):
+  type(lit.get_default_type()),
+  name(std::move(name_)),
+  literal(std::move(lit)){}
 
 };
 

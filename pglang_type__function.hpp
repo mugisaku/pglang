@@ -4,6 +4,7 @@
 
 #include"pglang_type__signature.hpp"
 #include"pglang_type__literal.hpp"
+#include"pglang_type__struct.hpp"
 #include"pglang_vm__binary.hpp"
 #include"aunique_ptr"
 
@@ -28,12 +29,19 @@ Function
 {
   Signature  signature;
 
+  std::vector<Parameter>  vardecl_list;
+
   aunique_ptr<vm::Binary>  binary;
 
   static constexpr size_t  get_size(){return 4;}
   static constexpr size_t  get_alignment_size(){return 4;}
 
   Literal  execute(const ArgumentList&  args);
+
+  Struct  make_stack_struct() const;
+
+  void  declare(Type&&  type,  std::string&&  name, Literal&&  lit=Literal());
+  void  declare(std::string&&  name, Literal&&  lit);
 
   void  print() const;
 
