@@ -1,4 +1,5 @@
 #include"pglang_type.hpp"
+#include"pglang_expr__literal.hpp"
 #include"pglang_type__struct.hpp"
 #include"pglang_type__enum.hpp"
 #include"pglang_type__union.hpp"
@@ -103,14 +104,6 @@ name(decl.name)
 
 
 Type::
-Type(const ArgumentList*  args):
-kind(TypeKind::argument_list)
-{
-  data.args = args;
-}
-
-
-Type::
 Type(const Type&  rhs):
 kind(TypeKind::null)
 {
@@ -163,8 +156,8 @@ operator=(const Type&  rhs)
       data.str = new char[std::strlen(rhs.data.str)+1];
       std::strcpy(data.str,rhs.data.str);
       break;
-  case(TypeKind::argument_list):
-      data.args = rhs.data.args;
+  case(TypeKind::literal):
+      data.lit = new Literal(*rhs.data.lit);
       break;
     }
 
@@ -202,8 +195,8 @@ operator=(Type&&  rhs) noexcept
   case(TypeKind::function):
       data.str = rhs.data.str;
       break;
-  case(TypeKind::argument_list):
-      data.args = rhs.data.args;
+  case(TypeKind::literal):
+      data.lit = rhs.data.lit;
       break;
     }
 
@@ -233,6 +226,12 @@ operator bool() const
 }
 
 
+const TypeData*
+Type::
+operator->() const
+{
+  return &data;
+}
 
 
 void
@@ -251,6 +250,9 @@ clear()
   case(TypeKind::enum_):
   case(TypeKind::function):
       delete[] data.str;
+      break;
+  case(TypeKind::literal):
+      delete data.lit;
       break;
   default:;
     }
@@ -280,6 +282,34 @@ Type::
 get_kind() const
 {
   return kind;
+}
+
+
+Type
+Type::
+get_referred_type() const
+{
+    switch(kind)
+    {
+  case(TypeKind::array):
+  case(TypeKind::pointer):
+  case(TypeKind::reference):
+      return *referred;
+      break;
+    }
+
+
+  printf("参照できる型はありません\n");
+
+  throw;
+}
+
+
+size_t
+Type::
+get_array_size() const
+{
+  return array_size;
 }
 
 
@@ -355,6 +385,8 @@ get_size() const
 
           return decl->definition->get_size();
         }
+      break;
+  case(TypeKind::literal):
       break;
     }
 
@@ -435,6 +467,8 @@ get_alignment_size() const
 
           return decl->definition->get_alignment_size();
         }
+      break;
+  case(TypeKind::literal):
       break;
     }
 

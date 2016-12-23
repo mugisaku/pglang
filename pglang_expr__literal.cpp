@@ -1,4 +1,5 @@
-#include"pglang_type__literal.hpp"
+#include"pglang_expr__literal.hpp"
+#include"pglang_expr.hpp"
 #include<cstdlib>
 #include<new>
 
@@ -19,6 +20,8 @@ Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data
 Literal::Literal(std::u16string&&  s):       kind(LiteralKind::u16string){new(&data) std::u16string(std::move(s));}
 Literal::Literal(std::u32string&&  s):       kind(LiteralKind::u32string){new(&data) std::u32string(std::move(s));}
 Literal::Literal(std::vector<Literal>&&  a): kind(LiteralKind::array){new(&data) std::vector<Literal>(std::move(a));}
+Literal::Literal(Identifier&&  id):          kind(LiteralKind::identifier){new(&data) std::string(std::move(id.s));}
+Literal::Literal(Expr*  expr):               kind(LiteralKind::expression){data.expr = expr;}
 
 
 Literal::
@@ -68,6 +71,7 @@ operator=(Literal&&  rhs) noexcept
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
+  case(LiteralKind::identifier):
       new(&data) std::string(std::move(rhs.data.s));
       break;
   case(LiteralKind::u16string):
@@ -78,6 +82,9 @@ operator=(Literal&&  rhs) noexcept
       break;
   case(LiteralKind::array):
       new(&data) std::vector<Literal>(std::move(rhs.data.a));
+      break;
+  case(LiteralKind::expression):
+      data.expr = rhs.data.expr;
       break;
     }
 
@@ -108,6 +115,7 @@ operator=(const Literal&   rhs)
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
+  case(LiteralKind::identifier):
       new(&data) std::string(rhs.data.s);
       break;
   case(LiteralKind::u16string):
@@ -118,6 +126,9 @@ operator=(const Literal&   rhs)
       break;
   case(LiteralKind::array):
       new(&data) std::vector<Literal>(rhs.data.a);
+      break;
+  case(LiteralKind::expression):
+      data.expr = new Expr(*rhs.data.expr);
       break;
     }
 
@@ -172,6 +183,8 @@ get_default_type() const
   case(LiteralKind::array):
       t = Type(Array(Type(Int()),data.a.size()));
       break;
+  case(LiteralKind::expression):
+      break;
     }
 
 
@@ -193,6 +206,7 @@ clear()
   case(LiteralKind::fp_number):
       break;
   case(LiteralKind::string):
+  case(LiteralKind::identifier):
       data.s.~basic_string();
       break;
   case(LiteralKind::u16string):
@@ -203,6 +217,9 @@ clear()
       break;
   case(LiteralKind::array):
       data.a.~vector();
+      break;
+  case(LiteralKind::expression):
+      delete data.expr;
       break;
     }
 
@@ -273,6 +290,8 @@ write(void*  ptr) const
     } break;
   case(LiteralKind::array):
       break;
+  case(LiteralKind::expression):
+      break;
     }
 
 
@@ -302,6 +321,9 @@ print() const
       break;
   case(LiteralKind::fp_number):
       printf("%f",data.f);
+      break;
+  case(LiteralKind::identifier):
+      printf("%s",data.s.data());
       break;
   case(LiteralKind::string):
       printf("\"%s\"",data.s.data());
@@ -340,6 +362,9 @@ print() const
 
 
       printf("}");
+      break;
+  case(LiteralKind::expression):
+      data.expr->print();
       break;
     }
 }

@@ -27,6 +27,8 @@ TypeKind
 {
   null,
 
+  literal,
+
   void_,
 
   nullptr_,
@@ -56,14 +58,12 @@ TypeKind
   enum_,
   union_,
   struct_,
-
   function,
-
-  argument_list,
 
 };
 
 
+struct Literal;
 struct Pointer;
 struct Reference;
 struct Array;
@@ -73,10 +73,23 @@ struct UnionDeclaration;
 struct FunctionDeclaration;
 
 
+union
+TypeData
+{
+  char*     str;
+  Literal*  lit;
+
+   TypeData(){};
+  ~TypeData(){};
+
+};
+
+
 class
 Type
 {
   TypeKind  kind;
+  TypeData  data;
 
   Book*  book;
 
@@ -85,15 +98,6 @@ Type
   aunique_ptr<Type>  referred;
 
   size_t  array_size;
-
-  union Data{
-    char*    str;
-    const ArgumentList*  args;
-
-     Data(){};
-    ~Data(){};
-
-  } data;
 
 public:
   Type(Book*  book_=nullptr);
@@ -137,6 +141,8 @@ public:
 
   bool  operator==(const Type&  rhs) const;
 
+  const TypeData*  operator->() const;
+
   operator bool() const;
 
   void  clear();
@@ -147,17 +153,23 @@ public:
 
   TypeKind  get_kind() const;
 
+  Type  get_referred_type() const;
+
+  size_t  get_array_size() const;
+
   size_t  get_size() const;
   size_t  get_alignment_size() const;
 
   bool  is_void() const;
-  bool  is_valid() const;
   bool  is_function() const;
-  bool  is_nullptr() const;
+  bool  is_null_pointer() const;
   bool  is_pointer() const;
   bool  is_array() const;
   bool  is_reference() const;
-  bool  is_integer() const;
+  bool  is_lvalue_reference() const;
+  bool  is_rvalue_reference() const;
+  bool  is_integral() const;
+  bool  is_floating_point() const;
   bool  is_boolean() const;
   bool  is_enum() const;
   bool  is_union() const;

@@ -1,5 +1,5 @@
-#ifndef PGLANG_TYPE__LITERAL_HPP_INCLUDED
-#define PGLANG_TYPE__LITERAL_HPP_INCLUDED
+#ifndef PGLANG_EXPR__LITERAL_HPP_INCLUDED
+#define PGLANG_EXPR__LITERAL_HPP_INCLUDED
 
 
 #include<cstdint>
@@ -11,6 +11,19 @@
 
 
 namespace pglang{
+
+
+
+
+struct Literal;
+struct Expr;
+
+struct
+ArgumentList: public std::vector<Literal>
+{
+  ArgumentList(std::initializer_list<Literal>  ls): std::vector<Literal>(ls){};
+
+};
 
 
 
@@ -29,11 +42,21 @@ LiteralKind
   u32string,
   array,
   identifier,
+  expression,
+  function,
+  argument_list,
 
 };
 
 
-struct Literal;
+struct
+Identifier
+{
+  std::string  s;
+
+  Identifier(std::string&&  s_): s(std::move(s_)){}
+
+};
 
 
 union
@@ -45,6 +68,8 @@ LiteralData
   std::u32string        u32s;
   double                f;
   std::vector<Literal>  a;
+  Expr*              expr;
+  ArgumentList       args;
 
    LiteralData(){}
   ~LiteralData(){}
@@ -68,6 +93,8 @@ public:
    Literal(std::u16string&&  u16s);
    Literal(std::u32string&&  u32s);
    Literal(std::vector<Literal>&&  a);
+   Literal(Identifier&&  id);
+   Literal(Expr*  expr);
    Literal(      Literal&&  rhs) noexcept;
    Literal(const Literal&   rhs)         ;
   ~Literal();

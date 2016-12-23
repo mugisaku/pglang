@@ -58,14 +58,18 @@ endif
 
 OBJ =                       \
   pglang_type.o             \
+  pglang_type__is.o         \
   pglang_type__struct.o     \
   pglang_type__union.o      \
   pglang_type__enum.o       \
   pglang_type__parameter.o  \
   pglang_type__signature.o  \
   pglang_type__function.o   \
-  pglang_type__literal.o    \
   pglang_type__book.o       \
+  pglang_expr.o             \
+  pglang_expr__value.o      \
+  pglang_expr__literal.o    \
+  pglang_expr__element.o    \
   pglang_vm__memory.o       \
   pglang_vm__binary.o       \
   pglang_vm__instruction.o  \

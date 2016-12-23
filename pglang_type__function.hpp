@@ -3,7 +3,7 @@
 
 
 #include"pglang_type__signature.hpp"
-#include"pglang_type__literal.hpp"
+#include"pglang_expr__literal.hpp"
 #include"pglang_type__struct.hpp"
 #include"pglang_vm__binary.hpp"
 #include"aunique_ptr"
@@ -14,14 +14,6 @@
 namespace pglang{
 
 
-
-
-struct
-ArgumentList: public std::vector<Literal>
-{
-  ArgumentList(std::initializer_list<Literal>  ls): std::vector<Literal>(ls){};
-
-};
 
 
 struct

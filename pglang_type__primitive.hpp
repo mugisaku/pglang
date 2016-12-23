@@ -47,11 +47,10 @@ struct Bool: Primitive<1,false>{};
 struct    NullPtr: Primitive<4,false>{};
 struct GenericPtr: Primitive<4,false>{};
 
-struct UInt: Primitive<4,false>{};
-struct  Int: Primitive<4, true>{};
-
-struct UIntPtr: Primitive<4,false>{};
-struct  IntPtr: Primitive<4, true>{};
+using Char  = Char8;
+using Int   = Int32;
+using Uint  = UInt32;
+using Float = Float32;
 
 
 }
