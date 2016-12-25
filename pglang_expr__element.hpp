@@ -74,8 +74,8 @@ public:
    Element(Literal&&  lit);
    Element(std::string&&  id);
    Element(ArgumentList&&  args);
-   Element(UnaryOperator  op);
-   Element(BinaryOperator  op);
+   Element(UnaryOperator&&  op);
+   Element(BinaryOperator&&  op);
    Element(      Element&&  rhs) noexcept;
    Element(const Element&   rhs)         ;
   ~Element();

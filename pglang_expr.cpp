@@ -19,90 +19,68 @@ calculate() const
       case(ElementKind::null):
         return left->calculate();
         break;
+      case(ElementKind::identifier):
+printf("未実装");
+throw;
+        break;
+      case(ElementKind::literal):
+        return Value(element->literal->i);
+        break;
+      case(ElementKind::argument_list):
+printf("未実装");
+throw;
+        break;
       case(ElementKind::unary_operator):
         {
-          auto  v = left->calculate();
-
-          auto  l = *v;
+          auto  l = left->calculate();
 
             switch(element->unop)
             {
-              case(Operator('!')): v = Value(!l);break;
-              case(Operator('~')): v = Value(~l);break;
-              case(Operator('-')): v = Value(-l);break;
+              case(Operator('!')): l = !l;break;
+              case(Operator('~')): l = ~l;break;
+              case(Operator('-')): l = -l;break;
+              case(Operator('&')): l = &l;break;
+              case(Operator('*')): l = *l;break;
             }
 
 
-          return v;
+          return std::move(l);
         }
         break;
       case(ElementKind::binary_operator):
         {
           auto  op = element->binop;
 
-          auto  lv = left->calculate();
-          auto  l = *lv;
-
-          auto  ro = right->element;
+          auto  l =  left->calculate();
+          auto  r = right->calculate();
 
             switch(op)
             {
-              case(Operator('.')):
-                {
-/*
-                    if(!lv.object)
-                    {
-                      printf("左辺がオブジェクトではありません\n");
+              case(Operator('*')): l = (l*r);break;
+              case(Operator('/')): l = (l/r);break;
+              case(Operator('%')): l = (l%r);break;
 
-                      throw;
-                    }
+              case(Operator('+')): l = (l+r);break;
+              case(Operator('-')): l = (l-r);break;
 
+              case(Operator('<','<')): l = (l<<r);break;
+              case(Operator('>','>')): l = (l>>r);break;
 
-                    if(ro.kind != OperandKind::identifier)
-                    {
-                      printf("右辺が識別子ではありません\n");
+              case(Operator('<')    ): l = (l< r);break;
+              case(Operator('<','=')): l = (l<=r);break;
+              case(Operator('>')    ): l = (l> r);break;
+              case(Operator('>','=')): l = (l>=r);break;
 
-                      throw;
-                    }
-
-
-                  return Value(&(*lv.object)[ro.data.identifier]);
-*/
-                }
-                break;
-            }
+              case(Operator('=','=')): l = (l==r);break;
+              case(Operator('!','=')): l = (l!=r);break;
 
 
-          auto  rv = right->calculate();
-          auto  r = *rv;
+              case(Operator('&')): l = (l&r);break;
+              case(Operator('|')): l = (l|r);break;
+              case(Operator('^')): l = (l^r);break;
 
-            switch(op)
-            {
-              case(Operator('*')): lv = Value(l*r);break;
-              case(Operator('/')): lv = Value(l/r);break;
-              case(Operator('%')): lv = Value(l%r);break;
-
-              case(Operator('+')): lv = Value(l+r);break;
-              case(Operator('-')): lv = Value(l-r);break;
-
-              case(Operator('<','<')): lv = Value(l<<r);break;
-              case(Operator('>','>')): lv = Value(l>>r);break;
-
-              case(Operator('<')    ): lv = Value(l< r);break;
-              case(Operator('<','=')): lv = Value(l<=r);break;
-              case(Operator('>')    ): lv = Value(l> r);break;
-              case(Operator('>','=')): lv = Value(l>=r);break;
-
-              case(Operator('=','=')): lv = Value(l==r);break;
-              case(Operator('!','=')): lv = Value(l!=r);break;
-
-
-              case(Operator('&')): lv = Value(l&r);break;
-              case(Operator('|')): lv = Value(l|r);break;
-              case(Operator('^')): lv = Value(l^r);break;
-
-              case(Operator('&','&')): lv = Value(l&&r);break;
-              case(Operator('|','|')): lv = Value(l&&r);break;
+              case(Operator('&','&')): l = (l&&r);break;
+              case(Operator('|','|')): l = (l&&r);break;
 
               case(Operator('<','<','=')): l <<= r;break;
               case(Operator('>','>','=')): l >>= r;break;
@@ -118,19 +96,8 @@ calculate() const
             }
 
 
-          return lv;
+          return std::move(l);
         }
-        break;
-      default:
-        {
-            switch(element.get_kind())
-            {
-              case(ElementKind::identifier):
-//                return Value(&root_object[op.data.identifier]);
-                break;
-            }
-        }
-        break;
     }
 
 

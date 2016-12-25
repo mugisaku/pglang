@@ -1,5 +1,6 @@
 #include"pglang_expr__value.hpp"
 #include"pglang_type.hpp"
+#include<cinttypes>
 #include<new>
 
 
@@ -107,7 +108,7 @@ to_integer() const
     }
 
   else
-    if(type.is_integral() && type.is_enum() && type.is_pointer() && type.is_null_pointer())
+    if(type.is_integral() || type.is_enum() || type.is_pointer() || type.is_null_pointer())
     {
       return Value(Type(Int()),data.i);
     }
@@ -191,6 +192,32 @@ void
 Value::
 print() const
 {
+  printf("%s(",type.get_name().data());
+
+    if(type == TypeKind::literal)
+    {
+      printf("%" PRId64,(*data.l)->i);
+    }
+
+  else
+    if(type.is_integral() || type.is_enum() || type.is_pointer() || type.is_null_pointer())
+    {
+      printf("%" PRId64,data.i);
+    }
+
+  else
+    if(type.is_floating_point())
+    {
+      printf("%f",data.f);
+    }
+
+  else
+    if(type.is_reference())
+    {
+    }
+
+
+  printf(")");
 }
 
 

@@ -15,8 +15,8 @@ Element::Element():                          kind(ElementKind::null){}
 Element::Element(Literal&&  lit):       kind(ElementKind::literal){new(&data) Literal(std::move(lit));}
 Element::Element(std::string&&  id):    kind(ElementKind::identifier){new(&data) std::string(std::move(id));}
 Element::Element(ArgumentList&&  args): kind(ElementKind::argument_list){new(&data) ArgumentList(std::move(args));}
-Element::Element(UnaryOperator  op):    kind(ElementKind::unary_operator){data.unop = op;}
-Element::Element(BinaryOperator  op):   kind(ElementKind::binary_operator){data.binop = op;}
+Element::Element(UnaryOperator&&  op):    kind(ElementKind::unary_operator){data.unop = std::move(op);}
+Element::Element(BinaryOperator&&  op):   kind(ElementKind::binary_operator){data.binop = std::move(op);}
 
 
 Element::
@@ -66,10 +66,10 @@ operator=(Element&&  rhs) noexcept
       new(&data) ArgumentList(std::move(rhs.data.args));
       break;
   case(ElementKind::unary_operator):
-      data.unop = rhs.data.unop;
+      data.unop = std::move(rhs.data.unop);
       break;
   case(ElementKind::binary_operator):
-      data.binop = rhs.data.binop;
+      data.binop = std::move(rhs.data.binop);
       break;
     }
 
