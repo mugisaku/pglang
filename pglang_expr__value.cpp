@@ -11,10 +11,14 @@ namespace pglang{
 
 
 Value::Value(Type&&  type_): type(std::move(type_)){}
+Value::Value(Type&&  type_, int64_t  i): type(std::move(type_)){data.i = i;}
+Value::Value(Type&&  type_, uint64_t  u): type(std::move(type_)){data.u = u;}
+Value::Value(Type&&  type_, double  f): type(std::move(type_)){data.f = f;}
 Value::Value(Type&&  type_, const Literal&  l): type(std::move(type_)){data.l = new Literal(l);}
-Value::Value(bool  b):    type(Bool()){data.i = b;}
-Value::Value(int  i):    type(Int()){data.i = i;}
-Value::Value(double  f): type(Float()){data.f = f;}
+Value::Value(bool  b): type(Bool()){data.b = b;}
+Value::Value(int64_t  i): type(Int()){data.i = i;}
+Value::Value(uint64_t  u): type(UInt()){data.u = u;}
+Value::Value(double    f): type(Float()){data.f = f;}
 Value::Value(      Value&&  rhs) noexcept{*this = std::move(rhs);}
 Value::Value(const Value&   rhs){*this = rhs;}
 Value::~Value(){clear();}
@@ -81,524 +85,37 @@ const ValueData*  Value::operator->() const{return &data;}
 
 Value
 Value::
-operator+(const Value&  rhs) const
+operator[](const Value&  rhs) const
 {
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i+b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは加算できません",type.get_name().data());
-
-      throw;
-    }
 }
 
 
 Value
 Value::
-operator-(const Value&  rhs) const
+operator()(const Value&  rhs) const
 {
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i-b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは減算できません",type.get_name().data());
-
-      throw;
-    }
 }
-
-
-Value
-Value::
-operator*(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i*b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは乗算できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator/(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-        if(!b->i)
-        {
-          printf("ゼロ除算が起きました\n");
-
-          throw;
-        }
-
-
-      return Value(a->i/b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは除算できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator%(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-        if(!b->i)
-        {
-          printf("ゼロ除算が起きました\n");
-
-          throw;
-        }
-
-
-      return Value(a->i%b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは剰余できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator==(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i == b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator!=(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i != b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator<(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i < b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator<=(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i <= b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator>(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i > b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator>=(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i >= b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは比較できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator<<(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i<<b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは左シフトできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator>>(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i>>b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは右シフトできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator&&(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_boolean();
-      auto  b = rhs.to_boolean();
-
-      return Value(a->b&&b->b);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは論値ANDできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator||(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_boolean();
-      auto  b = rhs.to_boolean();
-
-      return Value(a->b||b->b);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは論値ORできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator&(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i|b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sはビットANDできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator|(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i|b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sはビットORできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator^(const Value&  rhs) const
-{
-    try
-    {
-      auto  a =     to_integer();
-      auto  b = rhs.to_integer();
-
-      return Value(a->i^b->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sはXORできません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator-() const
-{
-    if(type.is_integral())
-    {
-      return Value(Type(type),-data.i);
-    }
-
-  else
-    if(type.is_floating_point())
-    {
-      return Value(Type(type),-data.f);
-    }
-
-  else
-    if(type.is_reference())
-    {
-      return -(*(*this));
-    }
-
-
-  printf("%sは符号反転できません",type.get_name().data());
-
-  throw;
-}
-
-
-Value
-Value::
-operator~() const
-{
-    try
-    {
-      return Value(~to_integer()->i);
-    }
-
-
-    catch(...)
-    {
-      printf("%sはビット反転できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator!() const
-{
-    try
-    {
-      return Value(!to_boolean()->b);
-    }
-
-
-    catch(...)
-    {
-      printf("%sは論理否定できません",type.get_name().data());
-
-      throw;
-    }
-}
-
-
-Value
-Value::
-operator*() const
-{
-    if(!type.is_reference())
-    {
-      printf("参照型でない値をデリファレンスしようとしました\n");
-
-      throw;
-    }
-
-
-  
-}
-
-
-Value  Value::operator =(const Value&  rhs) const{}
-Value  Value::operator+=(const Value&  rhs) const{}
-Value  Value::operator-=(const Value&  rhs) const{}
-Value  Value::operator*=(const Value&  rhs) const{}
-Value  Value::operator/=(const Value&  rhs) const{}
-Value  Value::operator%=(const Value&  rhs) const{}
-Value  Value::operator<<=(const Value&  rhs) const{}
-Value  Value::operator>>=(const Value&  rhs) const{}
-Value  Value::operator&=(const Value&  rhs) const{}
-Value  Value::operator|=(const Value&  rhs) const{}
-Value  Value::operator^=(const Value&  rhs) const{}
 
 
 Value
 Value::
 to_integer() const
 {
+    if(type == TypeKind::literal)
+    {
+      return Value(Type(Int()),(*data.l)->i);
+    }
+
+  else
     if(type.is_integral() && type.is_enum() && type.is_pointer() && type.is_null_pointer())
     {
-      return Value(data.i);
+      return Value(Type(Int()),data.i);
     }
 
   else
     if(type.is_floating_point())
     {
-      return Value(static_cast<int>(data.f));
+      return Value(Type(Float()),static_cast<int64_t>(data.f));
     }
 
   else
@@ -620,7 +137,7 @@ to_boolean() const
 {
     if(type.is_integral() || type.is_pointer() || type.is_null_pointer())
     {
-      return Value(static_cast<bool>(data.i));
+      return Value(Type(Bool()),data.i);
     }
 
   else
@@ -648,7 +165,7 @@ to_floating_point_number() const
 {
     if(type.is_integral())
     {
-      return Value(static_cast<double>(data.i));
+      return Value(Type(Float()),static_cast<double>(data.i));
     }
 
   else

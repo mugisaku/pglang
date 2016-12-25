@@ -47,6 +47,7 @@ make_literaldata_struct() const
 {
   Struct  st;
 
+/*
     for(auto&  vardecl: vardecl_list)
     {
         switch(vardecl.literal.get_kind())
@@ -60,6 +61,7 @@ make_literaldata_struct() const
       default:;
         }
     }
+*/
 
 
   return std::move(st);
@@ -91,12 +93,14 @@ execute(const ArgumentList&  args)
     {
       vm::Memory  mem(1024*1024);
 
+/*
         for(auto&  m: ldst.member_list)
         {
           auto&  lit = m.literal;
 
           lit.write(mem.get_pointer(m.offset));
         }
+*/
 
 
       vm::Context  ctx(mem,stst,args);

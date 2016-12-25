@@ -28,8 +28,7 @@ Expr
 
 public:
   Expr();
-  Expr(      Element&&  el) noexcept;
-  Expr(const Element&   el);
+  Expr(Element&&  el);
 
 
   Value  calculate() const;

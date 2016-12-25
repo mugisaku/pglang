@@ -104,6 +104,14 @@ name(decl.name)
 
 
 Type::
+Type(const Literal&  lit):
+book(nullptr),
+kind(TypeKind::literal)
+{
+}
+
+
+Type::
 Type(const Type&  rhs):
 kind(TypeKind::null)
 {

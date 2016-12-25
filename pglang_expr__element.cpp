@@ -1,22 +1,22 @@
 #include"pglang_expr__element.hpp"
+#include"pglang_expr.hpp"
+#include<cstdlib>
 #include<new>
+
+
 
 
 namespace pglang{
 
 
-Element::Element():                         kind(ElementKind::null){}
-Element::Element(Literal&&  o):             kind(ElementKind::operand){new(&data) Literal(std::move(o));}
-Element::Element(const UnaryOperator&  o):  kind(ElementKind::unary_operator){data.operator_ = o;}
-Element::Element(const BinaryOperator&  o): kind(ElementKind::binary_operator){data.operator_ = o;}
 
 
-Element::
-Element(const Element&  rhs):
-kind(ElementKind::null)
-{
-  *this = rhs;
-}
+Element::Element():                          kind(ElementKind::null){}
+Element::Element(Literal&&  lit):       kind(ElementKind::literal){new(&data) Literal(std::move(lit));}
+Element::Element(std::string&&  id):    kind(ElementKind::identifier){new(&data) std::string(std::move(id));}
+Element::Element(ArgumentList&&  args): kind(ElementKind::argument_list){new(&data) ArgumentList(std::move(args));}
+Element::Element(UnaryOperator  op):    kind(ElementKind::unary_operator){data.unop = op;}
+Element::Element(BinaryOperator  op):   kind(ElementKind::binary_operator){data.binop = op;}
 
 
 Element::
@@ -24,6 +24,14 @@ Element(Element&&  rhs) noexcept:
 kind(ElementKind::null)
 {
   *this = std::move(rhs);
+}
+
+
+Element::
+Element(const Element&   rhs):
+kind(ElementKind::null)
+{
+  *this = rhs;
 }
 
 
@@ -38,50 +46,69 @@ Element::
 
 Element&
 Element::
+operator=(Element&&  rhs) noexcept
+{
+  clear();
+
+  std::swap(kind,rhs.kind);
+
+    switch(kind)
+    {
+  case(ElementKind::null):
+      break;
+  case(ElementKind::literal):
+      new(&data) Literal(std::move(rhs.data.literal));
+      break;
+  case(ElementKind::identifier):
+      new(&data) std::string(std::move(rhs.data.identifier));
+      break;
+  case(ElementKind::argument_list):
+      new(&data) ArgumentList(std::move(rhs.data.args));
+      break;
+  case(ElementKind::unary_operator):
+      data.unop = rhs.data.unop;
+      break;
+  case(ElementKind::binary_operator):
+      data.binop = rhs.data.binop;
+      break;
+    }
+
+
+  return *this;
+}
+
+
+Element&
+Element::
 operator=(const Element&   rhs)
 {
   clear();
 
   kind = rhs.kind;
 
-    if(kind == ElementKind::operand)
+    switch(kind)
     {
-      new(&data.operand) Literal(rhs.data.operand);
+  case(ElementKind::null):
+      break;
+  case(ElementKind::literal):
+      new(&data) Literal(rhs.data.literal);
+      break;
+  case(ElementKind::identifier):
+      new(&data) std::string(rhs.data.identifier);
+      break;
+  case(ElementKind::argument_list):
+      new(&data) ArgumentList(rhs.data.args);
+      break;
+  case(ElementKind::unary_operator):
+      data.unop = rhs.data.unop;
+      break;
+  case(ElementKind::binary_operator):
+      data.binop = rhs.data.binop;
+      break;
     }
 
-  else
-    {
-      data.operator_ = rhs.data.operator_;
-    }
-}
 
-
-Element&
-Element::
-operator=(Element&&  rhs) noexcept
-{
-  clear();
-
-  kind = rhs.kind                    ;
-         rhs.kind = ElementKind::null;
-
-    if(kind == ElementKind::operand)
-    {
-      new(&data.operand) Literal(std::move(rhs.data.operand));
-    }
-
-  else
-    {
-      data.operator_ = rhs.data.operator_;
-    }
-}
-
-
-ElementKind
-Element::
-get_kind() const
-{
-  return kind;
+  return *this;
 }
 
 
@@ -93,130 +120,27 @@ operator->() const
 }
 
 
-Associativity
+ElementKind  Element::get_kind() const{return kind;}
+
+
+Type
 Element::
-get_associativity() const
+get_type() const
 {
-    if(kind == ElementKind::unary_operator)
+  Type  t;
+
+    switch(kind)
     {
-        switch(data.operator_)
-        {
-          case(Operator('!')):
-          case(Operator('~')):
-          case(Operator('-')): return Associativity::right_to_left;
-        }
-    }
-
-  else
-    {
-        switch(data.operator_)
-        {
-          case(Operator('.')):
-          case(Operator('*')):
-          case(Operator('/')):
-          case(Operator('%')):
-          case(Operator('+')):
-          case(Operator('-')):
-          case(Operator('<','<')):
-          case(Operator('>','>')):
-          case(Operator('&')):
-          case(Operator('|')):
-          case(Operator('^')):
-          case(Operator('&','&')):
-          case(Operator('|','|')): return Associativity::left_to_right;
-
-          case(Operator('<')    ):
-          case(Operator('<','=')):
-          case(Operator('>')    ):
-          case(Operator('>','=')):
-          case(Operator('=','=')):
-          case(Operator('!','=')): return Associativity::none;
-
-          case(Operator('<','<','=')):
-          case(Operator('>','>','=')):
-          case(Operator('+','=')):
-          case(Operator('-','=')):
-          case(Operator('*','=')):
-          case(Operator('/','=')):
-          case(Operator('%','=')):
-          case(Operator('&','=')):
-          case(Operator('|','=')):
-          case(Operator('^','=')):
-          case(Operator('=')    ): return Associativity::right_to_left;
-
-          default:;
-        }
+  case(ElementKind::null):
+      break;
+  case(ElementKind::literal):
+      t = data.literal.get_type();
+      break;
+  default:;
     }
 
 
-  return Associativity::none;
-}
-
-
-Precedence
-Element::
-get_precedence() const
-{
-    if(kind == ElementKind::unary_operator)
-    {
-        switch(data.operator_)
-        {
-          case(Operator('!')):
-          case(Operator('~')):
-          case(Operator('-')): return 0x80;
-        }
-    }
-
-  else
-    {
-        switch(data.operator_)
-        {
-          case(Operator('.')): return 0x90;
-
-          case(Operator('*')        ):
-          case(Operator('/')        ):
-          case(Operator('%')        ): return 0x70;
-
-          case(Operator('+')):
-          case(Operator('-')): return 0x60;
-
-          case(Operator('<','<')):
-          case(Operator('>','>')): return 0x50;
-
-          case(Operator('<')    ):
-          case(Operator('<','=')):
-          case(Operator('>')    ):
-          case(Operator('>','=')): return 0x40;
-
-          case(Operator('=','=')):
-          case(Operator('!','=')): return 0x30;
-
-
-          case(Operator('&')): return 0x22;
-          case(Operator('|')): return 0x21;
-          case(Operator('^')): return 0x20;
-
-          case(Operator('&','&')): return 0x11;
-          case(Operator('|','|')): return 0x10;
-
-          case(Operator('<','<','=')):
-          case(Operator('>','>','=')):
-          case(Operator('+','=')):
-          case(Operator('-','=')):
-          case(Operator('*','=')):
-          case(Operator('/','=')):
-          case(Operator('%','=')):
-          case(Operator('&','=')):
-          case(Operator('|','=')):
-          case(Operator('^','=')):
-          case(Operator('=')    ): return 0x00;
-
-          default:;
-        }
-    }
-
-
-  return 0;
+  return std::move(t);
 }
 
 
@@ -226,9 +150,18 @@ clear()
 {
     switch(kind)
     {
-      case(ElementKind::operand):
-        data.operand.~Literal();
-        break;
+  case(ElementKind::null):
+      break;
+  case(ElementKind::literal):
+      data.literal.~Literal();
+      break;
+  case(ElementKind::identifier):
+      data.identifier.~basic_string();
+      break;
+  case(ElementKind::argument_list):
+      data.args.~vector();
+      break;
+  default:;
     }
 
 
@@ -238,29 +171,34 @@ clear()
 
 void
 Element::
-print(bool  parenthesis) const
+print() const
 {
-    if(parenthesis)
-    {
-      printf("(");
-    }
-
-
     switch(kind)
     {
-      case(ElementKind::operand):
-        data.operand.print();
-        break;
-      case(ElementKind::unary_operator):
-      case(ElementKind::binary_operator):
-        printf("%s",data.operator_.codes);
-        break;
-    }
+  case(ElementKind::null):
+      break;
+  case(ElementKind::literal):
+      data.literal.print();
+      break;
+  case(ElementKind::identifier):
+      printf("%s",data.identifier.data());
+      break;
+  case(ElementKind::argument_list):
+      printf("(");
+
+        for(auto&  l: data.args)
+        {
+          l.print();
+          printf(", ");
+        }
 
 
-    if(parenthesis)
-    {
       printf(")");
+      break;
+  case(ElementKind::unary_operator):
+  case(ElementKind::binary_operator):
+      printf("%s",data.unop.codes);
+      break;
     }
 }
 

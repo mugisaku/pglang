@@ -49,7 +49,7 @@ struct GenericPtr: Primitive<4,false>{};
 
 using Char  = Char8;
 using Int   = Int32;
-using Uint  = UInt32;
+using UInt  = UInt32;
 using Float = Float32;
 
 

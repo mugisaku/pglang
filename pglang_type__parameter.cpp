@@ -16,7 +16,7 @@ literal(std::move(lit)){}
 
 Parameter::
 Parameter(std::string&&  name_, Literal&&  lit):
-type(lit.get_default_type()),
+//type(lit.get_default_type()),
 name(std::move(name_)),
 literal(std::move(lit)){}
 
@@ -29,7 +29,7 @@ print() const
 {
   printf("%s  %s",type.get_name().data(),name.data());
 
-    if(literal.get_kind() != LiteralKind::null)
+    if(literal)
     {
       printf("=");
 

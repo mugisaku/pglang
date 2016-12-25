@@ -46,6 +46,7 @@ state(0)
 
   mem.fill();
 
+/*
   auto  n = args.size();
 
     for(int  i = 0;  i < n;  i += 1)
@@ -63,6 +64,7 @@ state(0)
       case(TypeKind::uint32): mem.put32(bp+m.offset,l->i);break;
         }
     }
+*/
 }
 
 

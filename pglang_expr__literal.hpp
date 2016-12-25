@@ -15,61 +15,47 @@ namespace pglang{
 
 
 
-struct Literal;
 struct Expr;
-
-struct
-ArgumentList: public std::vector<Literal>
-{
-  ArgumentList(std::initializer_list<Literal>  ls): std::vector<Literal>(ls){};
-
-};
-
-
 
 
 enum class
 LiteralKind
 {
   null,
+
   nullptr_,
   true_,
   false_,
   integer,
-  fp_number,
+  unsigned_integer,
+  floating_point_number,
   string,
   u16string,
   u32string,
   array,
-  identifier,
   expression,
-  function,
-  argument_list,
 
 };
 
 
-struct
-Identifier
-{
-  std::string  s;
+struct Literal;
 
-  Identifier(std::string&&  s_): s(std::move(s_)){}
-
-};
+using LiteralList = std::vector<Literal>;
 
 
 union
 LiteralData
 {
-  int                   i;
-  std::string           s;
-  std::u16string        u16s;
-  std::u32string        u32s;
-  double                f;
-  std::vector<Literal>  a;
-  Expr*              expr;
-  ArgumentList       args;
+  int64_t   i;
+  uint64_t  u;
+  double    f;
+  Expr*  expr;
+
+  std::string        s;
+  std::u16string  u16s;
+  std::u32string  u32s;
+
+  LiteralList  arr;
 
    LiteralData(){}
   ~LiteralData(){}
@@ -84,34 +70,32 @@ Literal
   LiteralData  data;
 
 public:
-   Literal();
-   Literal(nullptr_t  nulptr);
-   Literal(bool  b);
-   Literal(int  i);
-   Literal(double  f);
-   Literal(std::string&&  s);
-   Literal(std::u16string&&  u16s);
-   Literal(std::u32string&&  u32s);
-   Literal(std::vector<Literal>&&  a);
-   Literal(Identifier&&  id);
-   Literal(Expr*  expr);
-   Literal(      Literal&&  rhs) noexcept;
-   Literal(const Literal&   rhs)         ;
+  Literal();
+  Literal(nullptr_t  nulptr);
+  Literal(bool  b);
+  Literal(int64_t  i);
+  Literal(uint64_t  u);
+  Literal(double  f);
+  Literal(std::string&&  s);
+  Literal(std::u16string&&  s);
+  Literal(std::u32string&&  s);
+  Literal(LiteralList&  a);
+  Literal(Expr*  expr);
+  Literal(      Literal&&  rhs) noexcept;
+  Literal(const Literal&   rhs);
   ~Literal();
 
   Literal&  operator=(      Literal&&  rhs) noexcept;
   Literal&  operator=(const Literal&   rhs)         ;
 
-  const LiteralData*  operator->() const;
+  operator bool() const;
 
   LiteralKind  get_kind() const;
+  const LiteralData*  operator->() const;
 
-  Type  get_default_type() const;
+  Type  get_type() const;
 
   void  clear();
-
-  void*  write(void*  ptr) const;
-
   void  print() const;
 
 };

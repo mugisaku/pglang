@@ -1,6 +1,7 @@
 #include"pglang_expr__literal.hpp"
 #include"pglang_expr.hpp"
 #include<cstdlib>
+#include<cinttypes>
 #include<new>
 
 
@@ -11,16 +12,16 @@ namespace pglang{
 
 
 
-Literal::Literal():                          kind(LiteralKind::null){}
+Literal::Literal(): kind(LiteralKind::null){}
 Literal::Literal(nullptr_t  nulptr):         kind(LiteralKind::nullptr_){}
 Literal::Literal(bool  b):                   kind(b? LiteralKind::true_:LiteralKind::false_){}
-Literal::Literal(int  i):                    kind(LiteralKind::integer){data.i = i;}
-Literal::Literal(double  f):                 kind(LiteralKind::fp_number){data.f = f;}
+Literal::Literal(int64_t  i):                kind(LiteralKind::integer){data.i = i;}
+Literal::Literal(uint64_t  u):               kind(LiteralKind::unsigned_integer){data.u = u;}
+Literal::Literal(double  f):                 kind(LiteralKind::floating_point_number){data.f = f;}
 Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data) std::string(std::move(s));}
 Literal::Literal(std::u16string&&  s):       kind(LiteralKind::u16string){new(&data) std::u16string(std::move(s));}
 Literal::Literal(std::u32string&&  s):       kind(LiteralKind::u32string){new(&data) std::u32string(std::move(s));}
-Literal::Literal(std::vector<Literal>&&  a): kind(LiteralKind::array){new(&data) std::vector<Literal>(std::move(a));}
-Literal::Literal(Identifier&&  id):          kind(LiteralKind::identifier){new(&data) std::string(std::move(id.s));}
+Literal::Literal(LiteralList&  a):           kind(LiteralKind::array){new(&data) LiteralList(std::move(a));}
 Literal::Literal(Expr*  expr):               kind(LiteralKind::expression){data.expr = expr;}
 
 
@@ -67,11 +68,13 @@ operator=(Literal&&  rhs) noexcept
   case(LiteralKind::integer):
       data.i = rhs.data.i;
       break;
-  case(LiteralKind::fp_number):
+  case(LiteralKind::unsigned_integer):
+      data.u = rhs.data.u;
+      break;
+  case(LiteralKind::floating_point_number):
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
-  case(LiteralKind::identifier):
       new(&data) std::string(std::move(rhs.data.s));
       break;
   case(LiteralKind::u16string):
@@ -80,11 +83,11 @@ operator=(Literal&&  rhs) noexcept
   case(LiteralKind::u32string):
       new(&data) std::u32string(std::move(rhs.data.u32s));
       break;
-  case(LiteralKind::array):
-      new(&data) std::vector<Literal>(std::move(rhs.data.a));
-      break;
   case(LiteralKind::expression):
       data.expr = rhs.data.expr;
+      break;
+  case(LiteralKind::array):
+      new(&data) LiteralList(std::move(rhs.data.arr));
       break;
     }
 
@@ -111,11 +114,13 @@ operator=(const Literal&   rhs)
   case(LiteralKind::integer):
       data.i = rhs.data.i;
       break;
-  case(LiteralKind::fp_number):
+  case(LiteralKind::unsigned_integer):
+      data.u = rhs.data.u;
+      break;
+  case(LiteralKind::floating_point_number):
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
-  case(LiteralKind::identifier):
       new(&data) std::string(rhs.data.s);
       break;
   case(LiteralKind::u16string):
@@ -124,17 +129,20 @@ operator=(const Literal&   rhs)
   case(LiteralKind::u32string):
       new(&data) std::u32string(rhs.data.u32s);
       break;
-  case(LiteralKind::array):
-      new(&data) std::vector<Literal>(rhs.data.a);
-      break;
   case(LiteralKind::expression):
       data.expr = new Expr(*rhs.data.expr);
+      break;
+  case(LiteralKind::array):
+      new(&data) LiteralList(rhs.data.arr);
       break;
     }
 
 
   return *this;
 }
+
+
+Literal::operator bool() const{return kind != LiteralKind::null;}
 
 
 const LiteralData*
@@ -145,12 +153,17 @@ operator->() const
 }
 
 
-LiteralKind  Literal::get_kind() const{return kind;}
+LiteralKind
+Literal::
+get_kind() const
+{
+  return kind;
+}
 
 
 Type
 Literal::
-get_default_type() const
+get_type() const
 {
   Type  t;
 
@@ -168,8 +181,11 @@ get_default_type() const
   case(LiteralKind::integer):
       t = Type(Int());
       break;
-  case(LiteralKind::fp_number):
-      t = Type(Float32());
+  case(LiteralKind::unsigned_integer):
+      t = Type(UInt());
+      break;
+  case(LiteralKind::floating_point_number):
+      t = Type(Float());
       break;
   case(LiteralKind::string):
       t = Type(Array(Char8(),data.s.size()+1));
@@ -181,9 +197,6 @@ get_default_type() const
       t = Type(Array(Char32(),data.u32s.size()+1));
       break;
   case(LiteralKind::array):
-      t = Type(Array(Type(Int()),data.a.size()));
-      break;
-  case(LiteralKind::expression):
       break;
     }
 
@@ -203,20 +216,8 @@ clear()
   case(LiteralKind::true_):
   case(LiteralKind::false_):
   case(LiteralKind::integer):
-  case(LiteralKind::fp_number):
-      break;
-  case(LiteralKind::string):
-  case(LiteralKind::identifier):
-      data.s.~basic_string();
-      break;
-  case(LiteralKind::u16string):
-      data.u16s.~basic_string();
-      break;
-  case(LiteralKind::u32string):
-      data.u32s.~basic_string();
-      break;
-  case(LiteralKind::array):
-      data.a.~vector();
+  case(LiteralKind::unsigned_integer):
+  case(LiteralKind::floating_point_number):
       break;
   case(LiteralKind::expression):
       delete data.expr;
@@ -225,77 +226,6 @@ clear()
 
 
   kind = LiteralKind::null;
-}
-
-
-void*
-Literal::
-write(void*  ptr) const
-{
-    switch(kind)
-    {
-  case(LiteralKind::null):
-      break;
-  case(LiteralKind::nullptr_):
-      break;
-  case(LiteralKind::true_):
-      break;
-  case(LiteralKind::false_):
-      break;
-  case(LiteralKind::integer):
-      break;
-  case(LiteralKind::fp_number):
-      break;
-  case(LiteralKind::string):
-    {
-      auto  p = static_cast<uint8_t*>(ptr);
-
-        for(auto  c: data.s)
-        {
-          *p++ = c;
-        }
-
-
-      *p++ = 0;
-
-      ptr = static_cast<void*>(p);
-    } break;
-  case(LiteralKind::u16string):
-    {
-      auto  p = static_cast<uint16_t*>(ptr);
-
-        for(auto  c: data.s)
-        {
-          *p++ = c;
-        }
-
-
-      *p++ = 0;
-
-      ptr = static_cast<void*>(p);
-    } break;
-  case(LiteralKind::u32string):
-    {
-      auto  p = static_cast<uint32_t*>(ptr);
-
-        for(auto  c: data.s)
-        {
-          *p++ = c;
-        }
-
-
-      *p++ = 0;
-
-      ptr = static_cast<void*>(p);
-    } break;
-  case(LiteralKind::array):
-      break;
-  case(LiteralKind::expression):
-      break;
-    }
-
-
-  return ptr;
 }
 
 
@@ -317,59 +247,58 @@ print() const
       printf("false");
       break;
   case(LiteralKind::integer):
-      printf("%d",data.i);
+      printf("%" PRId64,data.i);
       break;
-  case(LiteralKind::fp_number):
+  case(LiteralKind::unsigned_integer):
+      printf("%" PRIu64,data.u);
+      break;
+  case(LiteralKind::floating_point_number):
       printf("%f",data.f);
-      break;
-  case(LiteralKind::identifier):
-      printf("%s",data.s.data());
       break;
   case(LiteralKind::string):
       printf("\"%s\"",data.s.data());
       break;
   case(LiteralKind::u16string):
-      printf("u\"");
+      printf("u16\"");
 
         for(auto  c: data.u16s)
         {
-          printf("0X%02X,",c);
+          printf("0x%X",c);
         }
-
 
       printf("\"");
       break;
   case(LiteralKind::u32string):
-      printf("U\"");
+      printf("u32\"");
 
         for(auto  c: data.u32s)
         {
-          printf("0X%04X,",c);
+          printf("0x%X",c);
         }
 
-
       printf("\"");
+      break;
+  case(LiteralKind::expression):
+      printf("(");
+
+      data.expr->print();
+
+      printf(")");
       break;
   case(LiteralKind::array):
       printf("{");
 
-        for(auto&  lit: data.a)
+        for(auto&  l: data.arr)
         {
-          lit.print();
+          l.print();
 
           printf(",");
         }
 
-
       printf("}");
-      break;
-  case(LiteralKind::expression):
-      data.expr->print();
       break;
     }
 }
-
-
 
 
 }

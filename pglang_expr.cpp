@@ -7,8 +7,7 @@ namespace pglang{
 
 
 Expr::Expr(){}
-Expr::Expr(     Element&&  el) noexcept: element(std::move(el)){}
-Expr::Expr(const Element&  el)         : element(el){}
+Expr::Expr(Element&&  el): element(std::move(el)){}
 
 
 Value
@@ -20,31 +19,13 @@ calculate() const
       case(ElementKind::null):
         return left->calculate();
         break;
-      case(ElementKind::operand):
-        {
-          auto&  op = element->operand;
-
-            switch(op.get_kind())
-            {
-              case(LiteralKind::identifier):
-//                return Value(&root_object[op.data.identifier]);
-                break;
-              case(LiteralKind::expression):
-                return op->expr->calculate();
-                break;
-              case(LiteralKind::integer):
-                return Value(op->i);
-                break;
-            }
-        }
-        break;
       case(ElementKind::unary_operator):
         {
           auto  v = left->calculate();
 
           auto  l = *v;
 
-            switch(element->operator_)
+            switch(element->unop)
             {
               case(Operator('!')): v = Value(!l);break;
               case(Operator('~')): v = Value(~l);break;
@@ -57,12 +38,12 @@ calculate() const
         break;
       case(ElementKind::binary_operator):
         {
-          auto  op = element->operator_;
+          auto  op = element->binop;
 
           auto  lv = left->calculate();
           auto  l = *lv;
 
-          auto  ro = right->element->operand;
+          auto  ro = right->element;
 
             switch(op)
             {
@@ -140,10 +121,20 @@ calculate() const
           return lv;
         }
         break;
+      default:
+        {
+            switch(element.get_kind())
+            {
+              case(ElementKind::identifier):
+//                return Value(&root_object[op.data.identifier]);
+                break;
+            }
+        }
+        break;
     }
 
 
-  return Value(0);
+  return Value(0LL);
 }
 
 
@@ -155,9 +146,6 @@ print() const
     {
       case(ElementKind::null):
         left->print();
-        break;
-      case(ElementKind::operand):
-        element.print();
         break;
       case(ElementKind::unary_operator):
         printf("(");
@@ -178,6 +166,9 @@ print() const
         right->print();
 
         printf(")");
+        break;
+      default:
+        element.print();
         break;
     }
 }
@@ -216,11 +207,11 @@ to_rpn(std::vector<Element>&&  src)
             break;
           case(ElementKind::binary_operator):
             {
-              auto  cur_preced = el.get_precedence().number;
+              auto  cur_preced = el->binop.get_precedence().number;
 
                 if(unary_operator_stack.size())
                 {
-                  auto  tail_preced = unary_operator_stack.back().get_precedence().number;
+                  auto  tail_preced = unary_operator_stack.back()->unop.get_precedence().number;
 
                     if(cur_preced >= tail_preced)
                     {
@@ -244,12 +235,12 @@ to_rpn(std::vector<Element>&&  src)
                 {
                   auto&  tail = binary_operator_stack.back();
 
-                  auto  tail_preced = tail.get_precedence().number;
+                  auto  tail_preced = tail->binop.get_precedence().number;
 
                     if(cur_preced <= tail_preced)
                     {
                         if((cur_preced == tail_preced) &&
-                           (tail.get_associativity() == Associativity::right_to_left))
+                           (tail->binop.get_associativity() == Associativity::right_to_left))
                         {
                           break;
                         }
@@ -272,7 +263,7 @@ to_rpn(std::vector<Element>&&  src)
   	           binary_operator_stack.emplace_back(el);
             }
             break;
-          case(ElementKind::operand):
+          default:
             dst.emplace_back(new Expr(std::move(el)));
             break;
         }
@@ -299,9 +290,6 @@ create_tree(std::list<Expr*>&&  ls)
 
         switch(nd->element.get_kind())
         {
-          case(ElementKind::operand):
-            operand_buf.emplace_back(nd);
-            break;
           case(ElementKind::unary_operator):
               if(operand_buf.size() < 1)
               {
@@ -332,6 +320,9 @@ create_tree(std::list<Expr*>&&  ls)
             operand_buf.pop_back();
 
 
+            operand_buf.emplace_back(nd);
+            break;
+          default:
             operand_buf.emplace_back(nd);
             break;
         }

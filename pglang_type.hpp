@@ -127,7 +127,7 @@ public:
   Type(const EnumDeclaration&  decl);
   Type(const UnionDeclaration&  decl);
   Type(const FunctionDeclaration&  decl);
-  Type(const ArgumentList*  args);
+  Type(const Literal&  lit);
   Type(const Type&   rhs)         ;
   Type(      Type&&  rhs) noexcept;
  ~Type(                    );
@@ -180,7 +180,6 @@ public:
   bool  is_arithmetic() const;
   bool  is_fundamental() const;
   bool  is_compound() const;
-  bool  is_literal() const;
   bool  is_signed() const;
   bool  is_unsigned() const;
 

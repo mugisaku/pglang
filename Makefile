@@ -56,24 +56,28 @@ ifeq ($(delay),1)
 endif
 
 
-OBJ =                       \
-  pglang_type.o             \
-  pglang_type__is.o         \
-  pglang_type__struct.o     \
-  pglang_type__union.o      \
-  pglang_type__enum.o       \
-  pglang_type__parameter.o  \
-  pglang_type__signature.o  \
-  pglang_type__function.o   \
-  pglang_type__book.o       \
-  pglang_expr.o             \
-  pglang_expr__value.o      \
-  pglang_expr__literal.o    \
-  pglang_expr__element.o    \
-  pglang_vm__memory.o       \
-  pglang_vm__binary.o       \
-  pglang_vm__instruction.o  \
-  pglang_vm__context.o      \
+OBJ =                          \
+  pglang_type.o                \
+  pglang_type__is.o            \
+  pglang_type__struct.o        \
+  pglang_type__union.o         \
+  pglang_type__enum.o          \
+  pglang_type__parameter.o     \
+  pglang_type__signature.o     \
+  pglang_type__function.o      \
+  pglang_type__book.o          \
+  pglang_expr__element.o       \
+  pglang_expr__operator.o      \
+  pglang_expr__value.o         \
+  pglang_expr__value_assign.o  \
+  pglang_expr__value_unary.o   \
+  pglang_expr__value_binary.o  \
+  pglang_expr__literal.o       \
+  pglang_expr.o                \
+  pglang_vm__memory.o          \
+  pglang_vm__binary.o          \
+  pglang_vm__instruction.o     \
+  pglang_vm__context.o         \
 
 
 all: $(OBJ)

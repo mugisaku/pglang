@@ -57,6 +57,7 @@ bool  Type::is_scalar() const{return(is_arithmetic()||is_enum()||is_pointer()||i
 bool  Type::is_compound() const{return(is_array()||is_function()||is_pointer()||is_reference()||is_struct()||is_union()||is_enum());}
 
 
+/*
 bool
 Type::
 is_literal() const
@@ -66,6 +67,7 @@ is_literal() const
          (is_reference() && referred->is_literal())||
          (is_array()     && referred->is_literal()));
 }
+*/
 
 
 bool

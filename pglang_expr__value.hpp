@@ -16,18 +16,9 @@ namespace pglang{
 union
 ValueData
 {
-  bool  b;
-
-    int8_t   i8;
-   uint8_t  ui8;
-   int16_t   i16;
-  uint16_t  ui16;
-   int32_t   i32;
-  uint32_t  ui32;
-   int64_t   i64;
-  uint64_t  ui64;
-
-  int       i;
+  bool      b;
+   int64_t  i;
+  uint64_t  u;
   double    f;
   Literal*  l;
 
@@ -42,11 +33,15 @@ Value
   ValueData  data;
 
 public:
-  Value(Type&&  type_         );
-  Value(Type&&  type_, const Literal&  l);
+  Value(Type&&  type_        );
+  Value(Type&&  type_,  int64_t  i);
+  Value(Type&&  type_, uint64_t  u);
+  Value(Type&&  type_, double    f);
   Value(bool  b);
-  Value(int  i);
-  Value(double  d);
+  Value(int64_t  i);
+  Value(uint64_t  u);
+  Value(double    f);
+  Value(Type&&  type_, const Literal&  l);
   Value(      Value&&  rhs) noexcept;
   Value(const Value&   rhs);
  ~Value();
@@ -75,11 +70,14 @@ public:
   Value  operator&(const Value&  rhs) const;
   Value  operator|(const Value&  rhs) const;
   Value  operator^(const Value&  rhs) const;
+  Value  operator[](const Value&  rhs) const;
+  Value  operator()(const Value&  rhs) const;
 
   Value  operator-() const;
   Value  operator~() const;
   Value  operator!() const;
   Value  operator*() const;
+  Value  operator&() const;
 
   Value  operator =(const Value&  rhs) const;
   Value  operator+=(const Value&  rhs) const;
