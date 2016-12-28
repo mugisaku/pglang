@@ -1,5 +1,6 @@
 #include"pglang_expr__literal.hpp"
 #include"pglang_expr.hpp"
+#include"pglang_decl.hpp"
 #include<cstdlib>
 #include<cinttypes>
 #include<new>
@@ -161,10 +162,66 @@ get_kind() const
 }
 
 
+namespace{
+std::vector<Decl*>
+tmpdecl_list;
+}
+
+
+Value
+Literal::
+to_value() const
+{
+  Value  v;
+
+    switch(kind)
+    {
+  case(LiteralKind::null):
+      break;
+  case(LiteralKind::nullptr_):
+      v = Value(nullptr);
+      break;
+  case(LiteralKind::true_):
+      v = Value(true);
+      break;
+  case(LiteralKind::false_):
+      v = Value(false);
+      break;
+  case(LiteralKind::integer):
+      v = Value(data.i);
+      break;
+  case(LiteralKind::unsigned_integer):
+      v = Value(data.u);
+      break;
+  case(LiteralKind::floating_point_number):
+      v = Value(data.f);
+      break;
+  case(LiteralKind::string):
+      v = Value(*this);
+      break;
+  case(LiteralKind::u16string):
+      v = Value(*this);
+      break;
+  case(LiteralKind::u32string):
+      v = Value(*this);
+      break;
+  case(LiteralKind::array):
+      break;
+  case(LiteralKind::expression):
+      break;
+    }
+
+
+  return std::move(v);
+}
+
+
 Type
 Literal::
 get_type() const
 {
+  Decl*  decl = nullptr;
+
   Type  t;
 
     switch(kind)
@@ -188,21 +245,46 @@ get_type() const
       t = Type(Float());
       break;
   case(LiteralKind::string):
-      t = Type(Array(Char8(),data.s.size()+1));
+      decl = new Decl(std::string(),Array(Type(Char8()),data.s.size()+1));
+
+      t = Type(*decl);
       break;
   case(LiteralKind::u16string):
-      t = Type(Array(Char16(),data.u16s.size()+1));
+      decl = new Decl(std::string(),Array(Char16(),data.u16s.size()+1));
+
+      t = Type(*decl);
       break;
   case(LiteralKind::u32string):
-      t = Type(Array(Char32(),data.u32s.size()+1));
+      decl = new Decl(std::string(),Array(Char32(),data.u32s.size()+1));
+
+      t = Type(*decl);
       break;
   case(LiteralKind::array):
       break;
     }
 
 
+    if(decl)
+    {
+      tmpdecl_list.emplace_back(decl);
+    }
+
+
   return std::move(t);
 }
+
+
+void
+Literal::
+clear_temporary_declarations()
+{
+    for(auto  ptr: tmpdecl_list)
+    {
+      delete ptr;
+    }
+}
+
+
 
 
 void

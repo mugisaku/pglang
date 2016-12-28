@@ -5,7 +5,7 @@
 #include<cstdint>
 #include<string>
 #include<vector>
-#include"pglang_type.hpp"
+#include"pglang_expr__value.hpp"
 
 
 
@@ -16,6 +16,7 @@ namespace pglang{
 
 
 struct Expr;
+struct Decl;
 
 
 enum class
@@ -63,6 +64,9 @@ LiteralData
 };
 
 
+struct ValueContext;
+
+
 class
 Literal
 {
@@ -95,8 +99,12 @@ public:
 
   Type  get_type() const;
 
+  Value  to_value() const;
+
   void  clear();
   void  print() const;
+
+  static void  clear_temporary_declarations();
 
 };
 

@@ -4,7 +4,8 @@
 #include"pglang_type__enum.hpp"
 #include"pglang_type__union.hpp"
 #include"pglang_type__function.hpp"
-#include"pglang_type__book.hpp"
+#include"pglang_decl.hpp"
+#include"pglang_scope.hpp"
 #include<new>
 #include<cstring>
 
@@ -14,7 +15,7 @@
 namespace pglang{
 
 
-Type::Type(Book*  book_): kind(TypeKind::null), book(book_), name("undefined"){}
+Type::Type(): kind(TypeKind::null), name("undefined"){}
 Type::Type(Void&&  v): kind(TypeKind::void_), name("void_t"){}
 Type::Type(NullPtr&&     nulptr): kind(TypeKind::nullptr_), name("nullptr_t"){}
 Type::Type(GenericPtr&&  genptr): kind(TypeKind::genericptr), name("genericptr_t"){}
@@ -37,19 +38,7 @@ Type::Type(Float64&&  f): kind(TypeKind::float64), name("float64_t"){}
 
 
 Type::
-Type(Array&&  arr):
-book(arr.type->get_book()),
-kind(TypeKind::array),
-array_size(arr.size),
-name(arr.type->get_name()+"["+std::to_string(arr.size)+"]"),
-referred(arr.type)
-{
-}
-
-
-Type::
 Type(Pointer&&  ptr):
-book(ptr.type->get_book()),
 kind(TypeKind::pointer),
 referred(ptr.type),
 name(ptr.type->get_name()+"*")
@@ -59,7 +48,6 @@ name(ptr.type->get_name()+"*")
 
 Type::
 Type(Reference&&  ref):
-book(ref.type->get_book()),
 kind(TypeKind::reference),
 referred(ref.type),
 name(ref.type->get_name()+"&")
@@ -68,46 +56,20 @@ name(ref.type->get_name()+"&")
 
 
 Type::
-Type(const StructDeclaration&  decl):
-book(decl.book),
-kind(TypeKind::struct_),
-name(decl.name)
+Type(const Decl&  decl):
+kind(TypeKind::user_defined),
+name(decl.get_name())
 {
-}
-
-
-Type::
-Type(const EnumDeclaration&  decl):
-book(decl.book),
-kind(TypeKind::enum_),
-name(decl.name)
-{
-}
-
-
-Type::
-Type(const UnionDeclaration&  decl):
-book(decl.book),
-kind(TypeKind::union_),
-name(decl.name)
-{
-}
-
-
-Type::
-Type(const FunctionDeclaration&  decl):
-book(decl.book),
-kind(TypeKind::function),
-name(decl.name)
-{
+  data.decl = &decl;
 }
 
 
 Type::
 Type(const Literal&  lit):
-book(nullptr),
-kind(TypeKind::literal)
+kind(TypeKind::literal),
+name("literal")
 {
+  data.literal = &lit;
 }
 
 
@@ -143,31 +105,11 @@ operator=(const Type&  rhs)
   clear();
 
   kind = rhs.kind;
-  book = rhs.book;
   name = rhs.name;
-
-  array_size = rhs.array_size;
 
   referred = rhs.referred;
 
-    switch(kind)
-    {
-  case(TypeKind::array):
-      break;
-  case(TypeKind::pointer):
-  case(TypeKind::reference):
-      break;
-  case(TypeKind::struct_):
-  case(TypeKind::union_):
-  case(TypeKind::enum_):
-  case(TypeKind::function):
-      data.str = new char[std::strlen(rhs.data.str)+1];
-      std::strcpy(data.str,rhs.data.str);
-      break;
-  case(TypeKind::literal):
-      data.lit = new Literal(*rhs.data.lit);
-      break;
-    }
+  data = rhs.data;
 
 
   return *this;
@@ -182,31 +124,12 @@ operator=(Type&&  rhs) noexcept
 
   name = std::move(rhs.name);
 
-  book = rhs.book;
   kind = rhs.kind                 ;
          rhs.kind = TypeKind::null;
 
-  array_size = rhs.array_size;
-
   referred = std::move(rhs.referred);
 
-    switch(kind)
-    {
-  case(TypeKind::array):
-      break;
-  case(TypeKind::pointer):
-  case(TypeKind::reference):
-      break;
-  case(TypeKind::struct_):
-  case(TypeKind::union_):
-  case(TypeKind::enum_):
-  case(TypeKind::function):
-      data.str = rhs.data.str;
-      break;
-  case(TypeKind::literal):
-      data.lit = rhs.data.lit;
-      break;
-    }
+  data = rhs.data;
 
 
   return *this;
@@ -246,25 +169,7 @@ void
 Type::
 clear()
 {
-    switch(kind)
-    {
-  case(TypeKind::array):
-  case(TypeKind::pointer):
-  case(TypeKind::reference):
-      referred.reset();
-      break;
-  case(TypeKind::struct_):
-  case(TypeKind::union_):
-  case(TypeKind::enum_):
-  case(TypeKind::function):
-      delete[] data.str;
-      break;
-  case(TypeKind::literal):
-      delete data.lit;
-      break;
-  default:;
-    }
-
+  referred.reset();
 
   kind = TypeKind::null;
 }
@@ -274,14 +179,6 @@ const std::string&
 Type::get_name() const
 {
   return name;
-}
-
-
-Book*
-Type::
-get_book() const
-{
-  return book;
 }
 
 
@@ -299,7 +196,6 @@ get_referred_type() const
 {
     switch(kind)
     {
-  case(TypeKind::array):
   case(TypeKind::pointer):
   case(TypeKind::reference):
       return *referred;
@@ -310,14 +206,6 @@ get_referred_type() const
   printf("参照できる型はありません\n");
 
   throw;
-}
-
-
-size_t
-Type::
-get_array_size() const
-{
-  return array_size;
 }
 
 
@@ -346,53 +234,11 @@ get_size() const
   case(TypeKind::float32): return Float32::get_size();
   case(TypeKind::float64): return Float64::get_size();
 
-  case(TypeKind::array):
-      return referred->get_size()*array_size;
-      break;
   case(TypeKind::pointer):
   case(TypeKind::reference):
       return GenericPtr::get_size();
       break;
-  case(TypeKind::enum_):
-      return Enum::get_size();
-      break;
-  case(TypeKind::struct_):
-        if(!book)
-        {
-          throw;
-        }
-
-      else
-        {
-          auto  decl = book->find_struct(data.str);
-
-            if(!decl || decl->definition)
-            {
-              throw;
-            }
-
-
-          return decl->definition->get_size();
-        }
-      break;
-  case(TypeKind::union_):
-        if(!book)
-        {
-          throw;
-        }
-
-      else
-        {
-          auto  decl = book->find_union(data.str);
-
-            if(!decl || decl->definition)
-            {
-              throw;
-            }
-
-
-          return decl->definition->get_size();
-        }
+  case(TypeKind::user_defined):
       break;
   case(TypeKind::literal):
       break;
@@ -428,53 +274,11 @@ get_alignment_size() const
   case(TypeKind::float32): return Float32::get_alignment_size();
   case(TypeKind::float64): return Float64::get_alignment_size();
 
-  case(TypeKind::array):
-      return referred->get_alignment_size();
-      break;
   case(TypeKind::pointer):
   case(TypeKind::reference):
       return GenericPtr::get_alignment_size();
       break;
-  case(TypeKind::enum_):
-      return Enum::get_alignment_size();
-      break;
-  case(TypeKind::struct_):
-        if(!book)
-        {
-          throw;
-        }
-
-      else
-        {
-          auto  decl = book->find_struct(data.str);
-
-            if(!decl || decl->definition)
-            {
-              throw;
-            }
-
-
-          return decl->definition->get_alignment_size();
-        }
-      break;
-  case(TypeKind::union_):
-        if(!book)
-        {
-          throw;
-        }
-
-      else
-        {
-          auto  decl = book->find_union(data.str);
-
-            if(!decl || decl->definition)
-            {
-              throw;
-            }
-
-
-          return decl->definition->get_alignment_size();
-        }
+  case(TypeKind::user_defined):
       break;
   case(TypeKind::literal):
       break;

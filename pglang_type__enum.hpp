@@ -56,27 +56,6 @@ Enum
 };
 
 
-struct
-EnumDeclaration
-{
-  std::string  name;
-
-  aunique_ptr<Enum>  definition;
-
-  Book*  book;
-
-  void  print() const
-  {
-    printf("enum %s{",name.data());
-
-      if(definition){definition->print();}
-    else {printf("**UNDEFINED**");}
-
-    printf("}");
-  }
-};
-
-
 }
 
 

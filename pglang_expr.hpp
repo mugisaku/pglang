@@ -31,7 +31,7 @@ public:
   Expr(Element&&  el);
 
 
-  Value  calculate() const;
+  Value  to_value() const;
 
   void  print() const;
 

@@ -29,6 +29,13 @@ public:
 
   operator bool() const{return data;}
 
+  aunique_ptr&  operator=(T*  ptr)
+  {
+    reset(ptr);
+
+    return *this;
+  }
+
   aunique_ptr&  operator=(aunique_ptr&&  rhs)
   {
     reset(rhs.data)         ;

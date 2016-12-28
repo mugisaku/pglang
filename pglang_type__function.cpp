@@ -12,9 +12,11 @@ namespace pglang{
 
 
 
+namespace{
+
+
 Struct
-Function::
-make_stack_struct() const
+make_stack_struct(const Signature&  sig, const std::vector<Parameter>&  vardecl_list)
 {
   Struct  st;
 
@@ -28,13 +30,13 @@ make_stack_struct() const
   st.append(Type(UInt32()),std::string("previous_sp"));
   st.append(Type(UInt32()),std::string("return_address"));
 
-    for(auto&  p: signature.parameter_list)
+    for(auto&  p: sig.parameter_list)
     {
       st.append(Type(p.type),std::string(p.name));
     }
 
 
-  st.append(Type(signature.return_type),std::string("return_value"));
+  st.append(Type(sig.return_type),std::string("return_value"));
 
 
   return std::move(st);
@@ -42,12 +44,10 @@ make_stack_struct() const
 
 
 Struct
-Function::
-make_literaldata_struct() const
+make_literaldata_struct(const std::vector<Parameter>&  vardecl_list)
 {
   Struct  st;
 
-/*
     for(auto&  vardecl: vardecl_list)
     {
         switch(vardecl.literal.get_kind())
@@ -61,10 +61,10 @@ make_literaldata_struct() const
       default:;
         }
     }
-*/
 
 
   return std::move(st);
+}
 }
 
 
@@ -74,8 +74,8 @@ execute(const ArgumentList&  args)
 {
   signature.print();
 
-  auto  stst = make_stack_struct();
-  auto  ldst = make_literaldata_struct();
+  auto  stst = make_stack_struct(signature,vardecl_list);
+  auto  ldst = make_literaldata_struct(vardecl_list);
 
   printf("\nstack{\n");
 

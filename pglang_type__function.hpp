@@ -4,7 +4,6 @@
 
 #include"pglang_type__signature.hpp"
 #include"pglang_expr__literal.hpp"
-#include"pglang_type__struct.hpp"
 #include"pglang_vm__binary.hpp"
 #include"aunique_ptr"
 
@@ -32,35 +31,10 @@ Function
 
   Literal  execute(const ArgumentList&  args);
 
-  Struct  make_stack_struct() const;
-  Struct  make_literaldata_struct() const;
-
   void  declare(Type&&  type,  std::string&&  name, Literal&&  lit=Literal());
   void  declare(std::string&&  name, Literal&&  lit);
 
   void  print() const;
-
-};
-
-
-struct
-FunctionDeclaration
-{
-  std::string  name;
-
-  aunique_ptr<Function>  definition;
-
-  Book*  book;
-
-  void  print() const
-  {
-    printf("function %s{",name.data());
-
-      if(definition){definition->print();}
-    else {printf("**UNDEFINED**");}
-
-    printf("}");
-  }
 
 };
 

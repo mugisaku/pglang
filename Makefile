@@ -57,15 +57,17 @@ endif
 
 
 OBJ =                          \
+  pglang_decl.o                \
+  pglang_scope.o               \
   pglang_type.o                \
   pglang_type__is.o            \
   pglang_type__struct.o        \
   pglang_type__union.o         \
   pglang_type__enum.o          \
+  pglang_type__array.o         \
   pglang_type__parameter.o     \
   pglang_type__signature.o     \
   pglang_type__function.o      \
-  pglang_type__book.o          \
   pglang_expr__element.o       \
   pglang_expr__operator.o      \
   pglang_expr__value.o         \

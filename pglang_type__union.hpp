@@ -46,28 +46,6 @@ Union
 };
 
 
-struct
-UnionDeclaration
-{
-  std::string  name;
-
-  aunique_ptr<Union>  definition;
-
-  Book*  book;
-
-  void  print() const
-  {
-    printf("union %s{",name.data());
-
-      if(definition){definition->print();}
-    else {printf("**UNDEFINED**");}
-
-    printf("}");
-  }
-
-};
-
-
 }
 
 

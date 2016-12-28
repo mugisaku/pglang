@@ -15,7 +15,7 @@ namespace pglang{
 
 
 struct Function;
-struct Book;
+struct Decl;
 struct ArgumentList;
 
 
@@ -53,12 +53,8 @@ TypeKind
 
   reference,
   pointer,
-  array,
 
-  enum_,
-  union_,
-  struct_,
-  function,
+  user_defined,
 
 };
 
@@ -66,18 +62,13 @@ TypeKind
 struct Literal;
 struct Pointer;
 struct Reference;
-struct Array;
-struct StructDeclaration;
-struct EnumDeclaration;
-struct UnionDeclaration;
-struct FunctionDeclaration;
 
 
 union
 TypeData
 {
-  char*     str;
-  Literal*  lit;
+  const Decl*     decl;
+  const Literal*  literal;
 
    TypeData(){};
   ~TypeData(){};
@@ -91,16 +82,12 @@ Type
   TypeKind  kind;
   TypeData  data;
 
-  Book*  book;
-
   std::string  name;
 
   aunique_ptr<Type>  referred;
 
-  size_t  array_size;
-
 public:
-  Type(Book*  book_=nullptr);
+  Type();
   Type(Void&&  v);
   Type(NullPtr&&     nulptr);
   Type(GenericPtr&&  genptr);
@@ -120,13 +107,9 @@ public:
   Type(Float16&&  f);
   Type(Float32&&  f);
   Type(Float64&&  f);
-  Type(Array&&  arr);
   Type(Pointer&&  ptr);
   Type(Reference&&  ref);
-  Type(const StructDeclaration&  decl);
-  Type(const EnumDeclaration&  decl);
-  Type(const UnionDeclaration&  decl);
-  Type(const FunctionDeclaration&  decl);
+  Type(const Decl&  decl);
   Type(const Literal&  lit);
   Type(const Type&   rhs)         ;
   Type(      Type&&  rhs) noexcept;
@@ -147,15 +130,11 @@ public:
 
   void  clear();
 
-  Book*  get_book() const;
-
   const std::string&  get_name() const;
 
   TypeKind  get_kind() const;
 
   Type  get_referred_type() const;
-
-  size_t  get_array_size() const;
 
   size_t  get_size() const;
   size_t  get_alignment_size() const;
@@ -204,20 +183,6 @@ Reference
   Type*  type;
 
   Reference(Type&&  t): type(new Type(std::move(t))){}
-
-};
-
-
-struct
-Array
-{
-  Type*  type;
-
-  size_t  size;
-
-  Array(Type&&  t, size_t  size_):
-  type(new Type(std::move(t))),
-  size(size_) {}
 
 };
 

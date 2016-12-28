@@ -2,7 +2,6 @@
 #define PGLANG_EXPR__VALUE_HPP_INCLUDED
 
 
-#include"pglang_expr__literal.hpp"
 #include"pglang_type.hpp"
 
 
@@ -13,6 +12,9 @@ namespace pglang{
 
 
 
+struct Literal;
+
+
 union
 ValueData
 {
@@ -20,7 +22,8 @@ ValueData
    int64_t  i;
   uint64_t  u;
   double    f;
-  Literal*  l;
+
+  const Literal*  l;
 
 };
 
@@ -33,15 +36,17 @@ Value
   ValueData  data;
 
 public:
+  Value();
   Value(Type&&  type_        );
   Value(Type&&  type_,  int64_t  i);
   Value(Type&&  type_, uint64_t  u);
   Value(Type&&  type_, double    f);
+  Value(nullptr_t  nulptr);
   Value(bool  b);
   Value(int64_t  i);
   Value(uint64_t  u);
   Value(double    f);
-  Value(Type&&  type_, const Literal&  l);
+  Value(const Literal&  l);
   Value(      Value&&  rhs) noexcept;
   Value(const Value&   rhs);
  ~Value();

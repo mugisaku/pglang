@@ -12,19 +12,19 @@ Expr::Expr(Element&&  el): element(std::move(el)){}
 
 Value
 Expr::
-calculate() const
+to_value() const
 {
     switch(element.get_kind())
     {
       case(ElementKind::null):
-        return left->calculate();
+        return left->to_value();
         break;
       case(ElementKind::identifier):
 printf("未実装");
 throw;
         break;
       case(ElementKind::literal):
-        return Value(element->literal->i);
+        return element->literal.to_value();
         break;
       case(ElementKind::argument_list):
 printf("未実装");
@@ -32,7 +32,7 @@ throw;
         break;
       case(ElementKind::unary_operator):
         {
-          auto  l = left->calculate();
+          auto  l = left->to_value();
 
             switch(element->unop)
             {
@@ -51,8 +51,8 @@ throw;
         {
           auto  op = element->binop;
 
-          auto  l =  left->calculate();
-          auto  r = right->calculate();
+          auto  l =  left->to_value();
+          auto  r = right->to_value();
 
             switch(op)
             {

@@ -1,5 +1,4 @@
 #include"pglang_type.hpp"
-#include"pglang_type__book.hpp"
 #include"pglang_type__function.hpp"
 #include"pglang_expr.hpp"
 
@@ -26,7 +25,7 @@ auto  res = Expr::create_tree(std::move(ls));
 
 res->print();
 
-res->calculate().print();
+res->to_value().print();
 /*
   LiteralList  args(0,1.0,2,3.6,LiteralList(2,6,4));
 

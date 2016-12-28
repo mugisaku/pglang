@@ -44,28 +44,6 @@ Struct
 };
 
 
-struct
-StructDeclaration
-{
-  std::string  name;
-
-  aunique_ptr<Struct>  definition;
-
-  Book*  book;
-
-  void  print() const
-  {
-    printf("struct %s{",name.data());
-
-      if(definition){definition->print();}
-    else {printf("**UNDEFINED**");}
-
-    printf("}");
-  }
-
-};
-
-
 }
 
 

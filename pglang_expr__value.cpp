@@ -1,4 +1,5 @@
 #include"pglang_expr__value.hpp"
+#include"pglang_expr__literal.hpp"
 #include"pglang_type.hpp"
 #include<cinttypes>
 #include<new>
@@ -11,11 +12,13 @@ namespace pglang{
 
 
 
+Value::Value(){}
 Value::Value(Type&&  type_): type(std::move(type_)){}
 Value::Value(Type&&  type_, int64_t  i): type(std::move(type_)){data.i = i;}
 Value::Value(Type&&  type_, uint64_t  u): type(std::move(type_)){data.u = u;}
 Value::Value(Type&&  type_, double  f): type(std::move(type_)){data.f = f;}
-Value::Value(Type&&  type_, const Literal&  l): type(std::move(type_)){data.l = new Literal(l);}
+Value::Value(const Literal&  l): type(l.get_type()){data.l = &l;}
+Value::Value(nullptr_t  nulptr): type(NullPtr()){;}
 Value::Value(bool  b): type(Bool()){data.b = b;}
 Value::Value(int64_t  i): type(Int()){data.i = i;}
 Value::Value(uint64_t  u): type(UInt()){data.u = u;}

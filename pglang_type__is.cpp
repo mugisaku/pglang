@@ -1,4 +1,5 @@
 #include"pglang_type.hpp"
+#include"pglang_decl.hpp"
 
 
 
@@ -8,16 +9,24 @@ namespace pglang{
 
 
 bool  Type::is_void()      const{return(kind == TypeKind::void_);}
-bool  Type::is_function()  const{return(kind == TypeKind::function);}
 bool  Type::is_null_pointer()const{return(kind == TypeKind::nullptr_);}
 bool  Type::is_pointer()   const{return(kind == TypeKind::pointer);}
-bool  Type::is_array()     const{return(kind == TypeKind::array);}
 bool  Type::is_reference() const{return(kind == TypeKind::reference);}
 bool  Type::is_lvalue_reference() const{return(kind == TypeKind::reference);}
 bool  Type::is_rvalue_reference() const{return(kind == TypeKind::reference);}
-bool  Type::is_enum()      const{return(kind == TypeKind::enum_);}
-bool  Type::is_struct()    const{return(kind == TypeKind::struct_);}
-bool  Type::is_union()     const{return(kind == TypeKind::union_);}
+
+
+
+bool  Type::is_function()  const{return((kind == TypeKind::user_defined) &&
+                                        (data.decl->get_kind() == DeclKind::function));}
+bool  Type::is_struct()  const{return((kind == TypeKind::user_defined) &&
+                                      (data.decl->get_kind() == DeclKind::struct_));}
+bool  Type::is_enum()  const{return((kind == TypeKind::user_defined) &&
+                                    (data.decl->get_kind() == DeclKind::enum_));}
+bool  Type::is_union()  const{return((kind == TypeKind::user_defined) &&
+                                     (data.decl->get_kind() == DeclKind::union_));}
+bool  Type::is_array()  const{return((kind == TypeKind::user_defined) &&
+                                     (data.decl->get_kind() == DeclKind::array));}
 
 
 bool
