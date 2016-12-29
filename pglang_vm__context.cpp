@@ -33,7 +33,7 @@ Context::
 Context(Memory&  mem, const Struct&  st, const ArgumentList&  args, const FileSet*  fset):
 memory(mem),
 pc(0),
-bp((mem.get_size()-(st.get_size()*2)+(st.get_size()-1))/st.get_size()*st.get_size()),
+bp((mem.get_size()-(st.get_data_size()*2)+(st.get_data_size()-1))/st.get_data_size()*st.get_data_size()),
 state(0)
 {
   sp = bp;

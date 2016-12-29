@@ -1,4 +1,5 @@
 #include"pglang_decl.hpp"
+#include"pglang_type.hpp"
 #include<new>
 
 
@@ -50,6 +51,7 @@ operator=(Decl&&  rhs)
   clear();
 
   std::swap(kind,rhs.kind);
+  std::swap(defined,rhs.defined);
 
     switch(kind)
     {
@@ -81,7 +83,8 @@ operator=(const Decl&  rhs)
 {
   clear();
 
-  kind = rhs.kind;
+  kind    = rhs.kind;
+  defined = rhs.defined;
 
     switch(kind)
     {
@@ -140,6 +143,7 @@ clear()
 
 
   kind = DeclKind::null;
+  defined = false;
 }
 
 
@@ -159,10 +163,86 @@ get_kind() const
 }
 
 
+bool
+Decl::
+is_defined() const
+{
+  return defined;
+}
+
+
+size_t
+Decl::
+get_data_size() const
+{
+    switch(kind)
+    {
+  case(DeclKind::struct_):
+      return data.st.get_data_size();
+      break;
+  case(DeclKind::enum_):
+      return data.en.get_data_size();
+      break;
+  case(DeclKind::union_):
+      return data.un.get_data_size();
+      break;
+  case(DeclKind::array):
+      return data.ar.get_data_size();
+      break;
+  case(DeclKind::function):
+      return GenericPtr::get_data_size();
+      break;
+    }
+}
+
+
+size_t
+Decl::
+get_alignment_size() const
+{
+    switch(kind)
+    {
+  case(DeclKind::struct_):
+      return data.st.get_alignment_size();
+      break;
+  case(DeclKind::enum_):
+      return data.en.get_alignment_size();
+      break;
+  case(DeclKind::union_):
+      return data.un.get_alignment_size();
+      break;
+  case(DeclKind::array):
+      return data.ar.get_alignment_size();
+      break;
+  case(DeclKind::function):
+      return GenericPtr::get_alignment_size();
+      break;
+    }
+}
+
+
 void
 Decl::
 print() const
 {
+    switch(kind)
+    {
+  case(DeclKind::struct_):
+      data.st.print();
+      break;
+  case(DeclKind::enum_):
+      data.en.print();
+      break;
+  case(DeclKind::union_):
+      data.un.print();
+      break;
+  case(DeclKind::array):
+      data.ar.print();
+      break;
+  case(DeclKind::function):
+      data.fn.print();
+      break;
+    }
 }
 
 

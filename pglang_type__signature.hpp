@@ -11,18 +11,23 @@
 namespace pglang{
 
 
-using ParameterList = std::vector<Parameter>;
-
-
-struct
+class
 Signature
 {
   Type  return_type;
 
   ParameterList  parameter_list;
 
-  size_t  get_size() const;
-  size_t  get_alignment_size() const;
+public:
+  Signature(Type&&  type_);
+
+  const ParameterList*  operator->() const;
+
+  const ParameterList&  get_parameter_list() const;
+
+  const Type&  get_return_type() const;
+
+  void  append_parameter(Type&&  type, std::string&&  name, Literal&&  lit=Literal());
 
   void  print() const;
 

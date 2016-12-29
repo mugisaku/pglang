@@ -17,7 +17,7 @@ Primitive
 {
   static constexpr bool  sign(){return SIGN;}
 
-  static constexpr size_t  get_size()          {return BYTE_NUMBER;}
+  static constexpr size_t  get_data_size()     {return BYTE_NUMBER;}
   static constexpr size_t  get_alignment_size(){return BYTE_NUMBER;}
 
 };

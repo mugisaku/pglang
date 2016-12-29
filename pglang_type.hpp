@@ -136,7 +136,7 @@ public:
 
   Type  get_referred_type() const;
 
-  size_t  get_size() const;
+  size_t  get_data_size() const;
   size_t  get_alignment_size() const;
 
   bool  is_void() const;

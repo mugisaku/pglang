@@ -13,32 +13,39 @@
 namespace pglang{
 
 
-struct
+class
 UnionMember
 {
   Type  type;
 
   std::string  name;
 
+public:
   UnionMember(                                   );
   UnionMember(Type&&  type_, std::string&&  name_);
+
+  const Type&  get_type() const{return type;}
+  const std::string&  get_name() const{return name;}
 
 };
 
 
-struct
+class
 Union
 {
   std::vector<UnionMember>  member_list;
 
-  size_t            size;
+  size_t       data_size;
   size_t  alignment_size;
 
+public:
   Union();
 
-  void  append(UnionMember&&  member);
+  const std::vector<UnionMember>*  operator->() const;
 
-  size_t  get_size() const;
+  void  append(Type&&  type, std::string&&  name);
+
+  size_t  get_data_size() const;
   size_t  get_alignment_size() const;
 
   void  print() const;

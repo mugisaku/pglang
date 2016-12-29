@@ -22,7 +22,7 @@ make_stack_struct(const Signature&  sig, const std::vector<Parameter>&  vardecl_
 
     for(auto&  vardecl: vardecl_list)
     {
-      st.append(Type(vardecl.type),std::string(vardecl.name));
+      st.append(Type(vardecl.get_type()),std::string(vardecl.get_name()));
     }
 
 
@@ -30,13 +30,13 @@ make_stack_struct(const Signature&  sig, const std::vector<Parameter>&  vardecl_
   st.append(Type(UInt32()),std::string("previous_sp"));
   st.append(Type(UInt32()),std::string("return_address"));
 
-    for(auto&  p: sig.parameter_list)
+    for(auto&  p: sig.get_parameter_list())
     {
-      st.append(Type(p.type),std::string(p.name));
+      st.append(Type(p.get_type()),std::string(p.get_name()));
     }
 
 
-  st.append(Type(sig.return_type),std::string("return_value"));
+  st.append(Type(sig.get_return_type()),std::string("return_value"));
 
 
   return std::move(st);
@@ -50,13 +50,15 @@ make_literaldata_struct(const std::vector<Parameter>&  vardecl_list)
 
     for(auto&  vardecl: vardecl_list)
     {
-        switch(vardecl.literal.get_kind())
+        switch(vardecl.get_literal().get_kind())
         {
       case(LiteralKind::string):
       case(LiteralKind::u16string):
       case(LiteralKind::u32string):
       case(LiteralKind::array):
-          st.append(Type(vardecl.type),std::string(vardecl.name),Literal(vardecl.literal));
+          st.append(Type(vardecl.get_type()),
+                    std::string(vardecl.get_name()),
+                    Literal(vardecl.get_literal()));
           break;
       default:;
         }
@@ -66,6 +68,17 @@ make_literaldata_struct(const std::vector<Parameter>&  vardecl_list)
   return std::move(st);
 }
 }
+
+
+
+
+Function::
+Function(Signature&&  sig):
+signature(std::move(sig))
+{
+}
+
+
 
 
 Literal

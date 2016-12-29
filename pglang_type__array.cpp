@@ -19,20 +19,24 @@ type(std::move(type_))
 Array::
 Array(Type&&  type_, size_t  ex):
 type(std::move(type_)),
-extent(new size_t(ex))
+extent_size(new size_t(ex))
 {
 }
 
 
 
 
+const Type&  Array::get_type() const{return type;}
+
+const size_t*  Array::get_extent_size() const{return extent_size.get();}
+
 size_t
 Array::
-get_size() const
+get_data_size() const
 {
-    if(extent)
+    if(extent_size)
     {
-      return type.get_size()*(*extent);
+      return type.get_data_size()*(*extent_size);
     }
 
 
@@ -56,9 +60,9 @@ print() const
 {
   printf("<%s>[",type.get_name().data());
 
-    if(extent)
+    if(extent_size)
     {
-      printf("%d",*extent);
+      printf("%d",*extent_size);
     }
 
 

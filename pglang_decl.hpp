@@ -53,6 +53,8 @@ Decl
 
   std::string  name;
 
+  bool  defined=false;
+
 public:
    Decl();
    Decl(std::string&&  name_, Struct&&    st);
@@ -74,6 +76,11 @@ public:
   const std::string&  get_name() const;
 
   DeclKind  get_kind() const;
+
+  bool  is_defined() const;
+
+  size_t  get_data_size() const;
+  size_t  get_alignment_size() const;
 
   void  print() const;
 

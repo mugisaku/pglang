@@ -9,12 +9,13 @@ using namespace pglang;
 int
 main(int  argc, char**  argv)
 {
-  Function  fn;
+  auto  sig = Signature(Type(Int()));
 
-  fn.signature.return_type = Type(Int());
-  fn.signature.parameter_list.emplace_back(Type(Int8()),std::string("a"));
-  fn.signature.parameter_list.emplace_back(Type(Int16()),std::string("b"));
-  fn.signature.parameter_list.emplace_back(Type(UInt8()),std::string("c"));
+  sig.append_parameter(Type( Int8()),std::string("a"));
+  sig.append_parameter(Type(Int16()),std::string("b"));
+  sig.append_parameter(Type(UInt8()),std::string("c"));
+
+  Function  fn(std::move(sig));
 
 
 std::vector<Element>  src({Element(Literal(6LL)),Element(BinaryOperator('+')),Element(Literal(4LL))});

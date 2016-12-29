@@ -14,29 +14,22 @@
 namespace pglang{
 
 
-struct
-StructMember: public Parameter
-{
-  StructMember(Type&&  type_, std::string&&  name_, Literal&&  lit, size_t  offset);
-
-  size_t  get_tail_offset() const;
-
-};
-
-
-struct
+class
 Struct
 {
-  size_t            size;
+  size_t       data_size;
   size_t  alignment_size;
 
-  std::vector<StructMember>  member_list;
+  ParameterList  member_list;
 
+public:
   Struct();
+
+  const ParameterList*  operator->() const;
 
   void  append(Type&&  type, std::string&&  name, Literal&&  lit=Literal());
 
-  size_t  get_size() const;
+  size_t  get_data_size() const;
   size_t  get_alignment_size() const;
 
   void  print() const;

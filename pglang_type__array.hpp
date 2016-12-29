@@ -16,13 +16,18 @@ Array
 {
   Type  type;
 
-  aunique_ptr<size_t>  extent;
+  aunique_ptr<size_t>  extent_size;
 
 public:
   Array(Type&&  type_            );
   Array(Type&&  type_, size_t  ex);
 
-  size_t  get_size() const;
+
+  const Type&  get_type() const;
+
+  const size_t*  get_extent_size() const;  
+
+  size_t  get_data_size() const;
   size_t  get_alignment_size() const;
 
   void  print() const;

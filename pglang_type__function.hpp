@@ -15,7 +15,7 @@ namespace pglang{
 
 
 
-struct
+class
 Function
 {
   Signature  signature;
@@ -25,9 +25,8 @@ Function
   size_t  entry_point;
 
   aunique_ptr<vm::Binary>  binary;
-
-  static constexpr size_t  get_size(){return 4;}
-  static constexpr size_t  get_alignment_size(){return 4;}
+public:
+  Function(Signature&&  sig);
 
   Literal  execute(const ArgumentList&  args);
 

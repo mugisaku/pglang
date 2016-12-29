@@ -21,7 +21,7 @@ append(std::string&&  name_)
 {
     if(enumerator_list.size())
     {
-      int  v = enumerator_list.back().value+1;
+      int  v = enumerator_list.back().get_value()+1;
 
       enumerator_list.emplace_back(std::move(name_),v);
     }
@@ -49,7 +49,7 @@ print() const
 {
     for(auto&  en: enumerator_list)
     {
-      printf("%s = %d;\n",en.name.data(),en.value);
+      printf("%s = %d;\n",en.get_name().data(),en.get_value());
     }
 }
 

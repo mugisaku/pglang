@@ -211,36 +211,38 @@ get_referred_type() const
 
 size_t
 Type::
-get_size() const
+get_data_size() const
 {
     switch(kind)
     {
-  case(TypeKind::nullptr_  ): return    NullPtr::get_size();
-  case(TypeKind::genericptr): return GenericPtr::get_size();
-  case(TypeKind::bool_): return Bool::get_size();
-  case(TypeKind::char8_ ): return Char8::get_size();
-  case(TypeKind::char16_): return Char16::get_size();
-  case(TypeKind::char32_): return Char32::get_size();
-  case(TypeKind::int8 ): return Int8::get_size();
-  case(TypeKind::int16): return Int16::get_size();
-  case(TypeKind::int32): return Int32::get_size();
-  case(TypeKind::int64): return Int64::get_size();
-  case(TypeKind::uint8): return UInt8::get_size();
-  case(TypeKind::uint16): return UInt16::get_size();
-  case(TypeKind::uint32): return UInt32::get_size();
-  case(TypeKind::uint64): return UInt64::get_size();
-  case(TypeKind::float8): return Float8::get_size();
-  case(TypeKind::float16): return Float16::get_size();
-  case(TypeKind::float32): return Float32::get_size();
-  case(TypeKind::float64): return Float64::get_size();
+  case(TypeKind::nullptr_  ): return    NullPtr::get_data_size();
+  case(TypeKind::genericptr): return GenericPtr::get_data_size();
+  case(TypeKind::bool_): return Bool::get_data_size();
+  case(TypeKind::char8_ ): return Char8::get_data_size();
+  case(TypeKind::char16_): return Char16::get_data_size();
+  case(TypeKind::char32_): return Char32::get_data_size();
+  case(TypeKind::int8 ): return Int8::get_data_size();
+  case(TypeKind::int16): return Int16::get_data_size();
+  case(TypeKind::int32): return Int32::get_data_size();
+  case(TypeKind::int64): return Int64::get_data_size();
+  case(TypeKind::uint8): return UInt8::get_data_size();
+  case(TypeKind::uint16): return UInt16::get_data_size();
+  case(TypeKind::uint32): return UInt32::get_data_size();
+  case(TypeKind::uint64): return UInt64::get_data_size();
+  case(TypeKind::float8): return Float8::get_data_size();
+  case(TypeKind::float16): return Float16::get_data_size();
+  case(TypeKind::float32): return Float32::get_data_size();
+  case(TypeKind::float64): return Float64::get_data_size();
 
   case(TypeKind::pointer):
   case(TypeKind::reference):
-      return GenericPtr::get_size();
+      return GenericPtr::get_data_size();
       break;
   case(TypeKind::user_defined):
+      return data.decl->get_data_size();
       break;
   case(TypeKind::literal):
+      return data.literal->get_type().get_data_size();
       break;
     }
 
@@ -279,8 +281,10 @@ get_alignment_size() const
       return GenericPtr::get_alignment_size();
       break;
   case(TypeKind::user_defined):
+      return data.decl->get_alignment_size();
       break;
   case(TypeKind::literal):
+      return data.literal->get_type().get_alignment_size();
       break;
     }
 

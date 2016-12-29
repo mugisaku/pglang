@@ -26,7 +26,7 @@ name(std::move(name_))
 
 Union::
 Union():
-size(0),
+data_size(0),
 alignment_size(0)
 {
 }
@@ -34,22 +34,30 @@ alignment_size(0)
 
 
 
+const std::vector<UnionMember>*
+Union::
+operator->() const
+{
+  return &member_list;
+}
+
+
 void
 Union::
-append(UnionMember&&  member)
+append(Type&&  type, std::string&&  name)
 {
-            size = std::max(          size,member.type.get_size()          );
-  alignment_size = std::max(alignment_size,member.type.get_alignment_size());
+       data_size = std::max(     data_size,type.get_data_size()     );
+  alignment_size = std::max(alignment_size,type.get_alignment_size());
 
-  member_list.emplace_back(std::move(member));
+  member_list.emplace_back(std::move(type),std::move(name));
 }
 
 
 size_t
 Union::
-get_size() const
+get_data_size() const
 {
-  return 0;
+  return data_size;
 }
 
 
@@ -67,7 +75,7 @@ print() const
 {
     for(auto&  m: member_list)
     {
-      printf("%s %s;\n",m.type.get_name().data(),m.name.data());
+      printf("%s %s;\n",m.get_type().get_name().data(),m.get_name().data());
     }
 }
 
