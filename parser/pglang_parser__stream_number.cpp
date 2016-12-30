@@ -39,6 +39,89 @@ get_binary_integer_literal()
 }
 
 
+uint64_t
+Stream::
+get_octet_integer_literal()
+{
+  int  i;
+
+    if(!get_octet_number(i))
+    {
+      printf("文字が一つもありません\n");
+
+      throw;
+    }
+
+
+  uint64_t  v = i;
+
+    while(get_octet_number(i))
+    {
+      v <<= 3;
+      v  |= i;
+    }
+
+
+  return v;
+}
+
+
+uint64_t
+Stream::
+get_decimal_integer_literal()
+{
+  int  i;
+
+    if(!get_decimal_number(i))
+    {
+      printf("文字が一つもありません\n");
+
+      throw;
+    }
+
+
+  uint64_t  v = i;
+
+    while(get_decimal_number(i))
+    {
+      v *= 10;
+      v |=  i;
+    }
+
+
+  return v;
+}
+
+
+uint64_t
+Stream::
+get_hexadecimal_integer_literal()
+{
+  int  i;
+
+    if(!get_hexadecimal_number(i))
+    {
+      printf("文字が一つもありません\n");
+
+      throw;
+    }
+
+
+  uint64_t  v = i;
+
+    while(get_hexadecimal_number(i))
+    {
+      v <<= 4;
+      v  |= i;
+    }
+
+
+  return v;
+}
+
+
+
+
 bool
 Stream::
 get_binary_number(int&  i)

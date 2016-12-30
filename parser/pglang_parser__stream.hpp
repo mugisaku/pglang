@@ -23,17 +23,22 @@ Stream: public Tag
   std::string  get_string_literal();
   std::string  get_identifier_literal();
   uint64_t     get_character_literal();
+
+  char32_t  get_escchar();
+  char16_t  get_unichar16();
+  char32_t  get_unichar32();
+
   uint64_t  get_binary_integer_literal();
-  Operator  get_operator();
+  uint64_t  get_octet_integer_literal();
+  uint64_t  get_decimal_integer_literal();
+  uint64_t  get_hexadecimal_integer_literal();
 
   bool  get_binary_number(int&  i);
   bool  get_octet_number(int&  i);
   bool  get_decimal_number(int&  i);
   bool  get_hexadecimal_number(int&  i);
 
-  char32_t  get_escchar();
-  char16_t  get_unichar16();
-  char32_t  get_unichar32();
+  Operator  get_operator();
 
 public:
   Stream(const char*  p);

@@ -37,7 +37,7 @@ res->to_value(nullptr).print();
 */
 
 
-parser::Stream  s(";a; b :;c ;");
+parser::Stream  s(";{a; b} -5+67.0788:{;c ;}");
 
 parser::Block  blk(s);
 

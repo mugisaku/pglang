@@ -3,8 +3,8 @@ BASE_DIR = /usr/local
 
 
 
-CXXFLAGS = -std=gnu++11 -I. -I/usr/include/SDL2  -Werror -Wno-unused-result
-LDFLAGS  = -lz -lpng -lSDL2_image -lSDL2 -lSDL2main
+CXXFLAGS = -std=gnu++11 -I. -Iexpr -Ivm -Iparser  -Werror -Wno-unused-result
+LDFLAGS  =
 
 ifeq ($(opt),1)
   CXXFLAGS += -Os -march=i686 -fomit-frame-pointer
@@ -57,11 +57,11 @@ endif
 
 
 OBJ =                          \
-  pglang_parser__token.o       \
-  pglang_parser__block.o       \
-  pglang_parser__stream.o      \
-  pglang_parser__stream_character.o  \
-  pglang_parser__stream_number.o     \
+  parser/pglang_parser__token.o       \
+  parser/pglang_parser__block.o       \
+  parser/pglang_parser__stream.o      \
+  parser/pglang_parser__stream_character.o  \
+  parser/pglang_parser__stream_number.o     \
   pglang_decl.o                \
   pglang_scope.o               \
   pglang_block.o               \
@@ -75,22 +75,22 @@ OBJ =                          \
   pglang_type__parameter.o     \
   pglang_type__signature.o     \
   pglang_type__function.o      \
-  pglang_expr__element.o       \
-  pglang_expr__operator.o      \
-  pglang_expr__value.o         \
-  pglang_expr__value_assign.o  \
-  pglang_expr__value_unary.o   \
-  pglang_expr__value_binary.o  \
-  pglang_expr__literal.o       \
-  pglang_expr.o                \
-  pglang_vm__memory.o          \
-  pglang_vm__binary.o          \
-  pglang_vm__instruction.o     \
-  pglang_vm__context.o         \
+  expr/pglang_expr__element.o       \
+  expr/pglang_expr__operator.o      \
+  expr/pglang_expr__value.o         \
+  expr/pglang_expr__value_assign.o  \
+  expr/pglang_expr__value_unary.o   \
+  expr/pglang_expr__value_binary.o  \
+  expr/pglang_expr__literal.o       \
+  expr/pglang_expr.o                \
+  vm/pglang_vm__memory.o          \
+  vm/pglang_vm__binary.o          \
+  vm/pglang_vm__instruction.o     \
+  vm/pglang_vm__context.o         \
 
 
 all: $(OBJ)
-	g++ -o test_type test_type.cpp $(OBJ) -std=c++11
+	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
 
 
 clean:

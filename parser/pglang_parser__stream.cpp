@@ -168,6 +168,55 @@ get_token()
     }
 
   else
+    if(isdigit(c))
+    {
+      uint64_t  i = 0;
+
+        if(c == '0')
+        {
+          ++pointer;
+
+          auto  next = *pointer;
+
+               if(next == 'x'){  ++pointer;  i = get_hexadecimal_integer_literal();}
+          else if(next == 'b'){  ++pointer;  i =      get_binary_integer_literal();}
+          else if(next == 'o'){  ++pointer;  i =       get_octet_integer_literal();}
+        }
+
+      else
+        {
+          i = get_decimal_integer_literal();
+        }
+
+
+        if(*pointer == '.')
+        {
+          char*  endptr;
+
+          auto  d = std::strtod(pointer,&endptr);
+
+            if(pointer == endptr)
+            {
+              printf("不正な浮動小数数表記です\n");
+
+              throw;
+            }
+
+
+          d += i;
+
+          tok = Token(tag,d);
+
+          pointer = endptr;
+        }
+
+      else
+        {
+          tok = Token(tag,i);
+        }
+    }
+
+  else
     if(c == '\"')
     {
       ++pointer;
