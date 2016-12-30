@@ -12,9 +12,9 @@ namespace pglang{
 
 
 Element::Element():                          kind(ElementKind::null){}
-Element::Element(Literal&&  lit):       kind(ElementKind::literal){new(&data) Literal(std::move(lit));}
-Element::Element(std::string&&  id):    kind(ElementKind::identifier){new(&data) std::string(std::move(id));}
-Element::Element(ArgumentList&&  args): kind(ElementKind::argument_list){new(&data) ArgumentList(std::move(args));}
+Element::Element(Literal&&  lit):       kind(ElementKind::literal){new(&data.literal) Literal(std::move(lit));}
+Element::Element(std::string&&  id):    kind(ElementKind::identifier){new(&data.identifier) std::string(std::move(id));}
+Element::Element(ArgumentList&&  args): kind(ElementKind::argument_list){new(&data.args) ArgumentList(std::move(args));}
 Element::Element(UnaryOperator&&  op):    kind(ElementKind::unary_operator){data.unop = std::move(op);}
 Element::Element(BinaryOperator&&  op):   kind(ElementKind::binary_operator){data.binop = std::move(op);}
 
@@ -57,13 +57,13 @@ operator=(Element&&  rhs) noexcept
   case(ElementKind::null):
       break;
   case(ElementKind::literal):
-      new(&data) Literal(std::move(rhs.data.literal));
+      new(&data.literal) Literal(std::move(rhs.data.literal));
       break;
   case(ElementKind::identifier):
-      new(&data) std::string(std::move(rhs.data.identifier));
+      new(&data.identifier) std::string(std::move(rhs.data.identifier));
       break;
   case(ElementKind::argument_list):
-      new(&data) ArgumentList(std::move(rhs.data.args));
+      new(&data.args) ArgumentList(std::move(rhs.data.args));
       break;
   case(ElementKind::unary_operator):
       data.unop = std::move(rhs.data.unop);
@@ -91,13 +91,13 @@ operator=(const Element&   rhs)
   case(ElementKind::null):
       break;
   case(ElementKind::literal):
-      new(&data) Literal(rhs.data.literal);
+      new(&data.literal) Literal(rhs.data.literal);
       break;
   case(ElementKind::identifier):
-      new(&data) std::string(rhs.data.identifier);
+      new(&data.identifier) std::string(rhs.data.identifier);
       break;
   case(ElementKind::argument_list):
-      new(&data) ArgumentList(rhs.data.args);
+      new(&data.args) ArgumentList(rhs.data.args);
       break;
   case(ElementKind::unary_operator):
       data.unop = rhs.data.unop;

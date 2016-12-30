@@ -1,6 +1,12 @@
 #include"pglang_type.hpp"
 #include"pglang_type__function.hpp"
 #include"pglang_expr.hpp"
+#include"pglang_block.hpp"
+#include"pglang_parser__block.hpp"
+#include"pglang_parser__stream.hpp"
+#include"pglang_parser__token.hpp"
+
+
 
 
 using namespace pglang;
@@ -9,6 +15,7 @@ using namespace pglang;
 int
 main(int  argc, char**  argv)
 {
+/*
   auto  sig = Signature(Type(Int()));
 
   sig.append_parameter(Type( Int8()),std::string("a"));
@@ -26,7 +33,20 @@ auto  res = Expr::create_tree(std::move(ls));
 
 res->print();
 
-res->to_value().print();
+res->to_value(nullptr).print();
+*/
+
+
+parser::Stream  s(";a; b :;c ;");
+
+parser::Block  blk(s);
+
+blk.print();
+
+
+printf("\n");
+
+
 /*
   LiteralList  args(0,1.0,2,3.6,LiteralList(2,6,4));
 

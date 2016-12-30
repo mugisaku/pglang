@@ -2,7 +2,8 @@
 #define PGLANG_STMT_HPP_INCLUDED
 
 
-#include<vector>
+#include"pglang_expr.hpp"
+#include"pglang_decl.hpp"
 
 
 
@@ -17,15 +18,33 @@ StmtKind
 
   declaration,
   expression,
+  block,
   return_,
 
 };
 
 
 struct
-StmtData
+Return
 {
   Expr*  expr;
+
+  Return(Expr*  expr_=nullptr): expr(expr_){}
+
+};
+
+
+struct Scope;
+struct Block;
+
+
+struct
+StmtData
+{
+  const Decl*  decl;
+
+  Block*  block;
+  Expr*    expr;
 
 };
 
@@ -37,6 +56,23 @@ Stmt
   StmtData  data;
 
 public:
+   Stmt(const Decl&  decl);
+   Stmt(Expr*  expr);
+   Stmt(Block*  block);
+   Stmt(Return&&  ret);
+   Stmt(      Stmt&&  rhs) noexcept;
+   Stmt(const Stmt&   rhs)         ;
+  ~Stmt();
+
+
+  Stmt&  operator=(      Stmt&&  rhs) noexcept;
+  Stmt&  operator=(const Stmt&   rhs)         ;
+
+  void  clear();
+
+   void  execute(const Scope*  scope) const;
+
+  void  print() const;
 
 };
 

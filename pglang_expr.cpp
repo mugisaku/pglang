@@ -1,4 +1,5 @@
 #include"pglang_expr.hpp"
+#include"pglang_scope.hpp"
 
 
 
@@ -12,16 +13,25 @@ Expr::Expr(Element&&  el): element(std::move(el)){}
 
 Value
 Expr::
-to_value() const
+to_value(const Scope*  scope) const
 {
     switch(element.get_kind())
     {
       case(ElementKind::null):
-        return left->to_value();
+        return left->to_value(scope);
         break;
       case(ElementKind::identifier):
-printf("未実装");
-throw;
+          if(scope)
+          {
+            return scope->get_value(element->identifier);
+          }
+
+        else
+          {
+            printf("スコープがありません\n");
+
+            throw;
+          }
         break;
       case(ElementKind::literal):
         return element->literal.to_value();
@@ -32,7 +42,7 @@ throw;
         break;
       case(ElementKind::unary_operator):
         {
-          auto  l = left->to_value();
+          auto  l = left->to_value(scope);
 
             switch(element->unop)
             {
@@ -51,8 +61,8 @@ throw;
         {
           auto  op = element->binop;
 
-          auto  l =  left->to_value();
-          auto  r = right->to_value();
+          auto  l =  left->to_value(scope);
+          auto  r = right->to_value(scope);
 
             switch(op)
             {

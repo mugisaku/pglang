@@ -1,4 +1,5 @@
 #include"pglang_type__function.hpp"
+#include"pglang_block.hpp"
 #include"pglang_type.hpp"
 #include"pglang_type__struct.hpp"
 #include"pglang_vm__context.hpp"

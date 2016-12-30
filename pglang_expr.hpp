@@ -18,6 +18,9 @@
 namespace pglang{
 
 
+struct Scope;
+
+
 class
 Expr
 {
@@ -31,7 +34,7 @@ public:
   Expr(Element&&  el);
 
 
-  Value  to_value() const;
+  Value  to_value(const Scope*  scope) const;
 
   void  print() const;
 

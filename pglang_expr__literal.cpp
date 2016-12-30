@@ -19,10 +19,10 @@ Literal::Literal(bool  b):                   kind(b? LiteralKind::true_:LiteralK
 Literal::Literal(int64_t  i):                kind(LiteralKind::integer){data.i = i;}
 Literal::Literal(uint64_t  u):               kind(LiteralKind::unsigned_integer){data.u = u;}
 Literal::Literal(double  f):                 kind(LiteralKind::floating_point_number){data.f = f;}
-Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data) std::string(std::move(s));}
-Literal::Literal(std::u16string&&  s):       kind(LiteralKind::u16string){new(&data) std::u16string(std::move(s));}
-Literal::Literal(std::u32string&&  s):       kind(LiteralKind::u32string){new(&data) std::u32string(std::move(s));}
-Literal::Literal(LiteralList&  a):           kind(LiteralKind::array){new(&data) LiteralList(std::move(a));}
+Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data.s) std::string(std::move(s));}
+Literal::Literal(std::u16string&&  s):       kind(LiteralKind::u16string){new(&data.u16s) std::u16string(std::move(s));}
+Literal::Literal(std::u32string&&  s):       kind(LiteralKind::u32string){new(&data.u32s) std::u32string(std::move(s));}
+Literal::Literal(LiteralList&  a):           kind(LiteralKind::array){new(&data.arr) LiteralList(std::move(a));}
 Literal::Literal(Expr*  expr):               kind(LiteralKind::expression){data.expr = expr;}
 
 
@@ -76,19 +76,19 @@ operator=(Literal&&  rhs) noexcept
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
-      new(&data) std::string(std::move(rhs.data.s));
+      new(&data.s) std::string(std::move(rhs.data.s));
       break;
   case(LiteralKind::u16string):
-      new(&data) std::u16string(std::move(rhs.data.u16s));
+      new(&data.u16s) std::u16string(std::move(rhs.data.u16s));
       break;
   case(LiteralKind::u32string):
-      new(&data) std::u32string(std::move(rhs.data.u32s));
+      new(&data.u32s) std::u32string(std::move(rhs.data.u32s));
       break;
   case(LiteralKind::expression):
       data.expr = rhs.data.expr;
       break;
   case(LiteralKind::array):
-      new(&data) LiteralList(std::move(rhs.data.arr));
+      new(&data.arr) LiteralList(std::move(rhs.data.arr));
       break;
     }
 
@@ -122,19 +122,19 @@ operator=(const Literal&   rhs)
       data.f = rhs.data.f;
       break;
   case(LiteralKind::string):
-      new(&data) std::string(rhs.data.s);
+      new(&data.s) std::string(rhs.data.s);
       break;
   case(LiteralKind::u16string):
-      new(&data) std::u16string(rhs.data.u16s);
+      new(&data.u16s) std::u16string(rhs.data.u16s);
       break;
   case(LiteralKind::u32string):
-      new(&data) std::u32string(rhs.data.u32s);
+      new(&data.u32s) std::u32string(rhs.data.u32s);
       break;
   case(LiteralKind::expression):
       data.expr = new Expr(*rhs.data.expr);
       break;
   case(LiteralKind::array):
-      new(&data) LiteralList(rhs.data.arr);
+      new(&data.arr) LiteralList(rhs.data.arr);
       break;
     }
 

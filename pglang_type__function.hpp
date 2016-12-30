@@ -13,6 +13,7 @@
 namespace pglang{
 
 
+struct Block;
 
 
 class
@@ -25,6 +26,8 @@ Function
   size_t  entry_point;
 
   aunique_ptr<vm::Binary>  binary;
+  aunique_ptr<Block>        block;
+
 public:
   Function(Signature&&  sig);
 

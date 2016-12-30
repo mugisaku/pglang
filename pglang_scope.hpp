@@ -3,6 +3,9 @@
 
 
 #include<vector>
+#include<string>
+#include"pglang_expr__value.hpp"
+#include"pglang_decl.hpp"
 
 
 
@@ -16,16 +19,19 @@ struct Decl;
 class
 Scope
 {
+protected:
   Scope*  parent;
 
-  std::vector<Scope*>  children;
+  std::vector<Scope>  children;
 
-  std::vector<Decl*>   decl_table;
+  std::vector<Decl>   decl_table;
 
 public:
-  const std::vector<Decl*>*  operator->() const;
+  const std::vector<Decl>*  operator->() const;
 
-  void  append(Decl*  decl);
+  void  append(Decl&&  decl);
+
+  Value  get_value(const std::string&  name) const;
 
   void  print() const;
 

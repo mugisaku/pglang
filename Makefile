@@ -57,8 +57,15 @@ endif
 
 
 OBJ =                          \
+  pglang_parser__token.o       \
+  pglang_parser__block.o       \
+  pglang_parser__stream.o      \
+  pglang_parser__stream_character.o  \
+  pglang_parser__stream_number.o     \
   pglang_decl.o                \
   pglang_scope.o               \
+  pglang_block.o               \
+  pglang_stmt.o                \
   pglang_type.o                \
   pglang_type__is.o            \
   pglang_type__struct.o        \
