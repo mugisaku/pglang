@@ -30,7 +30,7 @@ public:
 
   const TokenList*  operator->() const;
 
-  void  print() const;
+  void  print(int  indent=0) const;
 
 };
 

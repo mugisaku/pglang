@@ -57,11 +57,13 @@ endif
 
 
 OBJ =                          \
+  parser/pglang_parser__tag.o        \
   parser/pglang_parser__token.o       \
   parser/pglang_parser__block.o       \
   parser/pglang_parser__stream.o      \
   parser/pglang_parser__stream_character.o  \
   parser/pglang_parser__stream_number.o     \
+  parser/pglang_parser__unicode.o           \
   pglang_decl.o                \
   pglang_scope.o               \
   pglang_block.o               \
@@ -91,10 +93,11 @@ OBJ =                          \
 
 all: $(OBJ)
 	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
+	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
 
 
 clean:
-	rm -f $(OBJ) test_type
+	rm -f $(OBJ) test_type test_parser log
 
 
 

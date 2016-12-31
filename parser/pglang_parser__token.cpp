@@ -13,10 +13,9 @@ namespace parser{
 
 
 Token::Token(): kind(TokenKind::null){}
-Token::Token(const Tag&  tag_, uint64_t  i): tag(tag_), kind(TokenKind::integer){data.i = i;}
+Token::Token(const Tag&  tag_, uint64_t  i, TokenKind  k): tag(tag_), kind(k){data.i = i;}
 Token::Token(const Tag&  tag_, double  f):   tag(tag_), kind(TokenKind::floating_point_number){data.f = f;}
 Token::Token(const Tag&  tag_, std::string&&  s, TokenKind  k): tag(tag_), kind(k){new(&data.s) std::string(std::move(s));}
-Token::Token(const Tag&  tag_, Operator  op): tag(tag_), kind(TokenKind::operator_){data.op = op;}
 Token::Token(const Tag&  tag_, Block*  blk): tag(tag_), kind(TokenKind::block){data.blk = blk;}
 Token::Token(const Tag&  tag_, SemiColon&&  semicolon): tag(tag_), kind(TokenKind::semicolon){}
 Token::Token(      Token&&  rhs) noexcept: kind(TokenKind::null){*this = std::move(rhs);}
@@ -32,7 +31,8 @@ operator=(Token&&  rhs) noexcept
 {
   clear();
 
-  std::swap(kind,rhs.kind);
+  kind = rhs.kind                  ;
+         rhs.kind = TokenKind::null;
 
   tag = rhs.tag;
 
@@ -41,6 +41,7 @@ operator=(Token&&  rhs) noexcept
   case(TokenKind::null):
       break;
   case(TokenKind::integer):
+  case(TokenKind::operator_):
       data.i = rhs.data.i;
       break;
   case(TokenKind::floating_point_number):
@@ -51,9 +52,6 @@ operator=(Token&&  rhs) noexcept
   case(TokenKind::u16string):
   case(TokenKind::u32string):
       new(&data.s) std::string(std::move(rhs.data.s));
-      break;
-  case(TokenKind::operator_):
-      data.op = rhs.data.op;
       break;
   case(TokenKind::block):
       data.blk = rhs.data.blk;
@@ -81,6 +79,7 @@ operator=(const Token&  rhs)
   case(TokenKind::null):
       break;
   case(TokenKind::integer):
+  case(TokenKind::operator_):
       data.i = rhs.data.i;
       break;
   case(TokenKind::floating_point_number):
@@ -91,9 +90,6 @@ operator=(const Token&  rhs)
   case(TokenKind::u16string):
   case(TokenKind::u32string):
       new(&data.s) std::string(rhs.data.s);
-      break;
-  case(TokenKind::operator_):
-      data.op = rhs.data.op;
       break;
   case(TokenKind::block):
       data.blk = new Block(*rhs.data.blk);
@@ -114,10 +110,10 @@ clear()
     switch(kind)
     {
   case(TokenKind::null):
-      break;
   case(TokenKind::integer):
-      break;
   case(TokenKind::floating_point_number):
+  case(TokenKind::operator_):
+  case(TokenKind::semicolon):
       break;
   case(TokenKind::string):
   case(TokenKind::identifier):
@@ -125,12 +121,8 @@ clear()
   case(TokenKind::u32string):
       data.s.~basic_string();
       break;
-  case(TokenKind::operator_):
-      break;
   case(TokenKind::block):
       delete data.blk;
-      break;
-  case(TokenKind::semicolon):
       break;
     }
 
@@ -144,9 +136,39 @@ const TokenData*  Token::operator->() const{return &data;}
 TokenKind  Token::get_kind() const{return kind;}
 
 
+namespace{
+void
+prints(const std::string&  s)
+{
+  printf("\"");
+
+    for(auto  c: s)
+    {
+        if(iscntrl(c))
+        {
+          printf("\\");
+
+            switch(c)
+            {
+          case('\n'): c = 'n';break;
+          case('\t'): c = 't';break;
+          case('\0'): c = '0';break;
+            }
+        }
+
+
+      printf("%c",c);
+    }
+
+
+  printf("\"");
+}
+}
+
+
 void
 Token::
-print() const
+print(int  indent) const
 {
     switch(kind)
     {
@@ -160,25 +182,27 @@ print() const
       printf("%f",data.f);
       break;
   case(TokenKind::string):
-      printf("\"%s\"",data.s.data());
+      prints(data.s);
       break;
   case(TokenKind::u16string):
-      printf("u\"%s\"",data.s.data());
+      printf("u");
+      prints(data.s);
       break;
   case(TokenKind::u32string):
-      printf("U\"%s\"",data.s.data());
+      printf("U");
+      prints(data.s);
       break;
   case(TokenKind::identifier):
       printf("%s",data.s.data());
       break;
   case(TokenKind::operator_):
-      printf("%s",data.op.codes);
+      printf("%c",static_cast<int>(data.i));
       break;
   case(TokenKind::block):
-      data.blk->print();
+      data.blk->print(indent+1);
       break;
   case(TokenKind::semicolon):
-      printf(";");
+      printf(";\n");
       break;
     }
 }

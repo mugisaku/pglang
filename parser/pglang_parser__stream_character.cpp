@@ -43,7 +43,7 @@ get_string_literal()
         {
           printf("文字列の途中に制御文字が現れました\n");
 
-          throw;
+          throw invalid_string_literal();
         }
 
       else
@@ -63,12 +63,10 @@ uint64_t
 Stream::
 get_character_literal()
 {
-  uint64_t  c = *pointer;
+  uint64_t  c = *pointer++;
 
     if(c == '\\')
     {
-      ++pointer;
-
       auto  uc = get_escchar();
 
       c = uc;
@@ -77,11 +75,11 @@ get_character_literal()
 
     if(*pointer != '\'')
     {
-      printf("不正な文字定数です\n");
-
-      throw;
+      throw invalid_character_literal();
     }
 
+
+  ++pointer;
 
   return c;
 }
@@ -125,20 +123,15 @@ get_escchar()
 
     switch(c)
     {
-  case('\\'): c = '\\';break;
-  case('\''): c = '\'';break;
-  case('\"'): c = '\"';break;
-  case('\n'): c = '\n';break;
-  case('\r'): c = '\r';break;
-  case('\f'): c = '\f';break;
-  case('\b'): c = '\b';break;
-  case('\0'): c = '\0';break;
-  case('\t'): c = '\t';break;
+  case('n'): c = '\n';break;
+  case('r'): c = '\r';break;
+  case('f'): c = '\f';break;
+  case('b'): c = '\b';break;
+  case('0'): c = '\0';break;
+  case('t'): c = '\t';break;
   case('u'): c = get_unichar16();break;
   case('U'): c = get_unichar32();break;
   default:;
-      printf("不明なエスケープ文字です\n");
-      throw;
     }
 
 
@@ -160,7 +153,7 @@ get_unichar16()
         {
           printf("error");
 
-          throw;
+          throw invalid_unicode_literal();
         }
 
 
@@ -185,9 +178,7 @@ get_unichar32()
 
         if(!get_hexadecimal_number(t))
         {
-          printf("error");
-
-          throw;
+          throw invalid_unicode_literal();
         }
 
 

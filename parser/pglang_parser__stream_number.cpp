@@ -20,9 +20,7 @@ get_binary_integer_literal()
 
     if(!get_binary_number(i))
     {
-      printf("文字が一つもありません\n");
-
-      throw;
+      throw invalid_number_literal();
     }
 
 
@@ -47,9 +45,7 @@ get_octet_integer_literal()
 
     if(!get_octet_number(i))
     {
-      printf("文字が一つもありません\n");
-
-      throw;
+      throw invalid_number_literal();
     }
 
 
@@ -74,9 +70,7 @@ get_decimal_integer_literal()
 
     if(!get_decimal_number(i))
     {
-      printf("文字が一つもありません\n");
-
-      throw;
+      throw invalid_number_literal();
     }
 
 
@@ -101,9 +95,7 @@ get_hexadecimal_integer_literal()
 
     if(!get_hexadecimal_number(i))
     {
-      printf("文字が一つもありません\n");
-
-      throw;
+      throw invalid_number_literal();
     }
 
 

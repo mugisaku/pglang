@@ -4,7 +4,6 @@
 
 #include<cstdint>
 #include<string>
-#include"pglang_expr__operator.hpp"
 #include"pglang_parser__token.hpp"
 
 
@@ -15,6 +14,12 @@
 
 namespace pglang{
 namespace parser{
+
+
+struct invalid_character_literal{};
+struct invalid_string_literal{};
+struct invalid_unicode_literal{};
+struct invalid_number_literal{};
 
 
 class
@@ -37,8 +42,6 @@ Stream: public Tag
   bool  get_octet_number(int&  i);
   bool  get_decimal_number(int&  i);
   bool  get_hexadecimal_number(int&  i);
-
-  Operator  get_operator();
 
 public:
   Stream(const char*  p);

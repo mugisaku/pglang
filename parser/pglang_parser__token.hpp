@@ -4,7 +4,7 @@
 
 #include<cstdint>
 #include<string>
-#include"pglang_expr__operator.hpp"
+#include"pglang_parser__tag.hpp"
 
 
 #ifndef report
@@ -38,15 +38,13 @@ TokenKind
 struct Block;
 
 
-struct
+union
 TokenData
 {
   uint64_t  i;
   double    f;
 
   std::string  s;
-
-  Operator  op;
 
   Block*  blk;
 
@@ -59,22 +57,6 @@ TokenData
 struct SemiColon{};
 
 
-struct
-Tag
-{
-  const char*  base_pointer;
-  const char*       pointer;
-
-  size_t   row_number;
-
-  Tag(const char*  p=nullptr):
-  base_pointer(p),
-  pointer(p),
-  row_number(0){}
-
-};
-
-
 class
 Token
 {
@@ -85,10 +67,9 @@ Token
 
 public:
    Token();
-   Token(const Tag&  tag_, uint64_t  i);
+   Token(const Tag&  tag_, uint64_t  i, TokenKind  k);
    Token(const Tag&  tag_, double  f);
    Token(const Tag&  tag_, std::string&&  s, TokenKind  k);
-   Token(const Tag&  tag_, Operator  op);
    Token(const Tag&  tag_, Block*  blk);
    Token(const Tag&  tag_, SemiColon&&  semicolon);
    Token(      Token&&  rhs) noexcept;
@@ -104,7 +85,7 @@ public:
 
   TokenKind  get_kind() const;
 
-  void  print() const;
+  void  print(int  indent=0) const;
 
 };
 

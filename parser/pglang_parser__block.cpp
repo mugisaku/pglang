@@ -1,5 +1,6 @@
 #include"pglang_parser__block.hpp"
 #include"pglang_parser__stream.hpp"
+#include"pglang_parser__unicode.hpp"
 
 
 
@@ -17,17 +18,32 @@ close_char(close_c)
 {
   s.skip_spaces();
 
-    while(s)
+  Tag  tag;
+
+    try
     {
-        if(*s == close_c)
+        while(s)
         {
-          s.advance();
+            if(*s == close_c)
+            {
+              s.advance();
 
-          break;
+              break;
+            }
+
+
+          tag = s;
+
+          token_list.emplace_back(s.get_token());
+
+          s.skip_spaces();
         }
+    }
 
 
-      token_list.emplace_back(s.get_token());
+    catch(...)
+    {
+      tag.print();
     }
 }
 
@@ -44,7 +60,7 @@ operator->() const
 
 void
 Block::
-print() const
+print(int  indent) const
 {
     if(open_char)
     {
@@ -54,7 +70,7 @@ print() const
 
     for(auto&  tok: token_list)
     {
-      tok.print();
+      tok.print(indent);
 
       printf(" ");
     }

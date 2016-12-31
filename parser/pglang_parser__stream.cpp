@@ -72,6 +72,7 @@ skip_spaces()
 }
 
 
+/*
 Operator
 Stream::
 get_operator()
@@ -122,6 +123,7 @@ get_operator()
 
   throw;
 }
+*/
 
 
 namespace{
@@ -142,6 +144,7 @@ isoperator(int  c)
          (c == '^') ||
          (c == '~') ||
          (c == '?') ||
+         (c == '#') ||
          (c == '.') ||
          (c == ',') ||
          (c == ':'));
@@ -164,7 +167,9 @@ get_token()
 
     if(isoperator(c))
     {
-      tok = Token(tag,get_operator());
+      ++pointer;
+
+      tok = Token(tag,static_cast<uint64_t>(c),TokenKind::operator_);
     }
 
   else
@@ -212,7 +217,7 @@ get_token()
 
       else
         {
-          tok = Token(tag,i);
+          tok = Token(tag,i,TokenKind::integer);
         }
     }
 
@@ -229,7 +234,7 @@ get_token()
     {
       ++pointer;
 
-      tok = Token(tag,get_character_literal());
+      tok = Token(tag,get_character_literal(),TokenKind::integer);
     }
 
   else
