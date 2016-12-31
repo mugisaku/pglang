@@ -26,6 +26,7 @@ ArrayLiteral: public std::vector<Literal>
 {
 };
 
+
 struct
 ArgumentList: public ArrayLiteral
 {
@@ -38,7 +39,7 @@ ElementKind
   null,
 
   literal,
-
+  expression,
   identifier,
   argument_list,
   unary_operator,
@@ -53,6 +54,7 @@ ElementData
   Literal         literal;
   std::string  identifier;
 
+  Expr*            expr;
   ArgumentList     args;
    UnaryOperator   unop;
   BinaryOperator  binop;
@@ -73,6 +75,7 @@ public:
    Element();
    Element(Literal&&  lit);
    Element(std::string&&  id);
+   Element(Expr*  expr);
    Element(ArgumentList&&  args);
    Element(UnaryOperator&&  op);
    Element(BinaryOperator&&  op);

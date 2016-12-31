@@ -56,7 +56,6 @@ make_literaldata_struct(const std::vector<Parameter>&  vardecl_list)
       case(LiteralKind::string):
       case(LiteralKind::u16string):
       case(LiteralKind::u32string):
-      case(LiteralKind::array):
           st.append(Type(vardecl.get_type()),
                     std::string(vardecl.get_name()),
                     Literal(vardecl.get_literal()));

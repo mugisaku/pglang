@@ -84,6 +84,7 @@ OBJ =                          \
   expr/pglang_expr__value_unary.o   \
   expr/pglang_expr__value_binary.o  \
   expr/pglang_expr__literal.o       \
+  expr/pglang_expr__initializer.o   \
   expr/pglang_expr.o                \
   vm/pglang_vm__memory.o          \
   vm/pglang_vm__binary.o          \

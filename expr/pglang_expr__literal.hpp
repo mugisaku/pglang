@@ -33,15 +33,8 @@ LiteralKind
   string,
   u16string,
   u32string,
-  array,
-  expression,
 
 };
-
-
-struct Literal;
-
-using LiteralList = std::vector<Literal>;
 
 
 union
@@ -50,21 +43,15 @@ LiteralData
   int64_t   i;
   uint64_t  u;
   double    f;
-  Expr*  expr;
 
   std::string        s;
   std::u16string  u16s;
   std::u32string  u32s;
 
-  LiteralList  arr;
-
    LiteralData(){}
   ~LiteralData(){}
 
 };
-
-
-struct ValueContext;
 
 
 class
@@ -83,8 +70,6 @@ public:
   Literal(std::string&&  s);
   Literal(std::u16string&&  s);
   Literal(std::u32string&&  s);
-  Literal(LiteralList&  a);
-  Literal(Expr*  expr);
   Literal(      Literal&&  rhs) noexcept;
   Literal(const Literal&   rhs);
   ~Literal();

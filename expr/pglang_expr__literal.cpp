@@ -22,8 +22,6 @@ Literal::Literal(double  f):                 kind(LiteralKind::floating_point_nu
 Literal::Literal(std::string&&  s):          kind(LiteralKind::string){new(&data.s) std::string(std::move(s));}
 Literal::Literal(std::u16string&&  s):       kind(LiteralKind::u16string){new(&data.u16s) std::u16string(std::move(s));}
 Literal::Literal(std::u32string&&  s):       kind(LiteralKind::u32string){new(&data.u32s) std::u32string(std::move(s));}
-Literal::Literal(LiteralList&  a):           kind(LiteralKind::array){new(&data.arr) LiteralList(std::move(a));}
-Literal::Literal(Expr*  expr):               kind(LiteralKind::expression){data.expr = expr;}
 
 
 Literal::
@@ -84,12 +82,6 @@ operator=(Literal&&  rhs) noexcept
   case(LiteralKind::u32string):
       new(&data.u32s) std::u32string(std::move(rhs.data.u32s));
       break;
-  case(LiteralKind::expression):
-      data.expr = rhs.data.expr;
-      break;
-  case(LiteralKind::array):
-      new(&data.arr) LiteralList(std::move(rhs.data.arr));
-      break;
     }
 
 
@@ -129,12 +121,6 @@ operator=(const Literal&   rhs)
       break;
   case(LiteralKind::u32string):
       new(&data.u32s) std::u32string(rhs.data.u32s);
-      break;
-  case(LiteralKind::expression):
-      data.expr = new Expr(*rhs.data.expr);
-      break;
-  case(LiteralKind::array):
-      new(&data.arr) LiteralList(rhs.data.arr);
       break;
     }
 
@@ -205,10 +191,6 @@ to_value() const
   case(LiteralKind::u32string):
       v = Value(*this);
       break;
-  case(LiteralKind::array):
-      break;
-  case(LiteralKind::expression):
-      break;
     }
 
 
@@ -259,8 +241,6 @@ get_type() const
 
       t = Type(*decl);
       break;
-  case(LiteralKind::array):
-      break;
     }
 
 
@@ -301,8 +281,14 @@ clear()
   case(LiteralKind::unsigned_integer):
   case(LiteralKind::floating_point_number):
       break;
-  case(LiteralKind::expression):
-      delete data.expr;
+  case(LiteralKind::string):
+      data.s.~basic_string();
+      break;
+  case(LiteralKind::u16string):
+      data.u16s.~basic_string();
+      break;
+  case(LiteralKind::u32string):
+      data.u32s.~basic_string();
       break;
     }
 
@@ -359,25 +345,6 @@ print() const
         }
 
       printf("\"");
-      break;
-  case(LiteralKind::expression):
-      printf("(");
-
-      data.expr->print();
-
-      printf(")");
-      break;
-  case(LiteralKind::array):
-      printf("{");
-
-        for(auto&  l: data.arr)
-        {
-          l.print();
-
-          printf(",");
-        }
-
-      printf("}");
       break;
     }
 }
