@@ -13,11 +13,13 @@ namespace parser{
 
 
 Token::Token(): kind(TokenKind::null){}
-Token::Token(const Tag&  tag_, uint64_t  i, TokenKind  k): tag(tag_), kind(k){data.i = i;}
+Token::Token(const Tag&  tag_, uint64_t  i): tag(tag_), kind(TokenKind::integer){data.i = i;}
 Token::Token(const Tag&  tag_, double  f):   tag(tag_), kind(TokenKind::floating_point_number){data.f = f;}
+Token::Token(const Tag&  tag_, Operator&&  op):   tag(tag_), kind(TokenKind::operator_){data.operator_ = op;}
 Token::Token(const Tag&  tag_, std::string&&  s, TokenKind  k): tag(tag_), kind(k){new(&data.s) std::string(std::move(s));}
 Token::Token(const Tag&  tag_, Block*  blk): tag(tag_), kind(TokenKind::block){data.blk = blk;}
 Token::Token(const Tag&  tag_, SemiColon&&  semicolon): tag(tag_), kind(TokenKind::semicolon){}
+Token::Token(const Tag&  tag_, Comma&&  comma): tag(tag_), kind(TokenKind::comma){}
 Token::Token(      Token&&  rhs) noexcept: kind(TokenKind::null){*this = std::move(rhs);}
 Token::Token(const Token&   rhs)         : kind(TokenKind::null){*this = rhs;}
 Token::~Token(){clear();}
@@ -41,8 +43,10 @@ operator=(Token&&  rhs) noexcept
   case(TokenKind::null):
       break;
   case(TokenKind::integer):
-  case(TokenKind::operator_):
       data.i = rhs.data.i;
+      break;
+  case(TokenKind::operator_):
+      data.operator_ = rhs.data.operator_;
       break;
   case(TokenKind::floating_point_number):
       data.f = rhs.data.f;
@@ -57,6 +61,7 @@ operator=(Token&&  rhs) noexcept
       data.blk = rhs.data.blk;
       break;
   case(TokenKind::semicolon):
+  case(TokenKind::comma):
       break;
     }
 
@@ -79,8 +84,10 @@ operator=(const Token&  rhs)
   case(TokenKind::null):
       break;
   case(TokenKind::integer):
-  case(TokenKind::operator_):
       data.i = rhs.data.i;
+      break;
+  case(TokenKind::operator_):
+      data.operator_ = rhs.data.operator_;
       break;
   case(TokenKind::floating_point_number):
       data.f = rhs.data.f;
@@ -95,6 +102,7 @@ operator=(const Token&  rhs)
       data.blk = new Block(*rhs.data.blk);
       break;
   case(TokenKind::semicolon):
+  case(TokenKind::comma):
       break;
     }
 
@@ -114,6 +122,7 @@ clear()
   case(TokenKind::floating_point_number):
   case(TokenKind::operator_):
   case(TokenKind::semicolon):
+  case(TokenKind::comma):
       break;
   case(TokenKind::string):
   case(TokenKind::identifier):
@@ -196,13 +205,16 @@ print(int  indent) const
       printf("%s",data.s.data());
       break;
   case(TokenKind::operator_):
-      printf("%c",static_cast<int>(data.i));
+      printf("%s",data.operator_.codes);
       break;
   case(TokenKind::block):
       data.blk->print(indent+1);
       break;
   case(TokenKind::semicolon):
       printf(";\n");
+      break;
+  case(TokenKind::comma):
+      printf(",");
       break;
     }
 }

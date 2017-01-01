@@ -85,36 +85,6 @@ get_character_literal()
 }
 
 
-std::string
-Stream::
-get_identifier_literal()
-{
-  std::string  s;
-
-  s.push_back(*pointer++);
-
-    for(;;)
-    {
-      auto  c = *pointer;
-
-        if(isalnum(c) || (c == '_'))
-        {
-          ++pointer;
-
-          s.push_back(c);
-        }
-
-      else
-        {
-          break;
-        }
-    }
-
-
-  return std::move(s);
-}
-
-
 char32_t
 Stream::
 get_escchar()

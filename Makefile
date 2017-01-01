@@ -3,7 +3,7 @@ BASE_DIR = /usr/local
 
 
 
-CXXFLAGS = -std=gnu++11 -I. -Iexpr -Ivm -Iparser  -Werror -Wno-unused-result
+CXXFLAGS = -std=gnu++11 -I. -Iexpr -Ivm -Iparser -Igrammar  -Werror -Wno-unused-result
 LDFLAGS  =
 
 ifeq ($(opt),1)
@@ -86,6 +86,12 @@ OBJ =                          \
   expr/pglang_expr__literal.o       \
   expr/pglang_expr__initializer.o   \
   expr/pglang_expr.o                \
+  grammar/pglang_grammar__element.o     \
+  grammar/pglang_grammar__group.o       \
+  grammar/pglang_grammar__definition.o  \
+  grammar/pglang_grammar__book.o        \
+  grammar/pglang_grammar__node.o        \
+  grammar/pglang_grammar__stream.o      \
   vm/pglang_vm__memory.o          \
   vm/pglang_vm__binary.o          \
   vm/pglang_vm__instruction.o     \

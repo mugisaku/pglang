@@ -3,29 +3,45 @@
 
 
 #include<cstddef>
+#include<string>
+#include"pglang_expr__operator.hpp"
 
 
 namespace pglang{
 namespace parser{
 
 
-struct
+class
 Tag
 {
+protected:
   const char*  base_pointer;
   const char*       pointer;
 
   size_t   row_number;
 
-  Tag(const char*  p=nullptr):
-  base_pointer(p),
-  pointer(p),
-  row_number(0){}
+  std::string  get_identifier_literal();
 
+  Operator  get_operator();
+
+public:
+  Tag(const char*  p=nullptr);
+
+
+  operator bool() const;
+
+  char  operator*() const;
+
+  void  skip_spaces();
+
+  void  advance();
 
   void  print() const;
 
 };
+
+
+bool  isoperator(int  c);
 
 
 }}

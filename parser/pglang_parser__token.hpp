@@ -5,6 +5,7 @@
 #include<cstdint>
 #include<string>
 #include"pglang_parser__tag.hpp"
+#include"pglang_expr__operator.hpp"
 
 
 #ifndef report
@@ -29,6 +30,7 @@ TokenKind
   identifier,
   operator_,
   semicolon,
+  comma,
 
   block,
 
@@ -46,6 +48,8 @@ TokenData
 
   std::string  s;
 
+  Operator  operator_;
+
   Block*  blk;
 
    TokenData(){}
@@ -55,6 +59,7 @@ TokenData
 
 
 struct SemiColon{};
+struct Comma{};
 
 
 class
@@ -67,11 +72,13 @@ Token
 
 public:
    Token();
-   Token(const Tag&  tag_, uint64_t  i, TokenKind  k);
+   Token(const Tag&  tag_, uint64_t  i);
    Token(const Tag&  tag_, double  f);
+   Token(const Tag&  tag_, Operator&&  op);
    Token(const Tag&  tag_, std::string&&  s, TokenKind  k);
    Token(const Tag&  tag_, Block*  blk);
    Token(const Tag&  tag_, SemiColon&&  semicolon);
+   Token(const Tag&  tag_, Comma&&  comma);
    Token(      Token&&  rhs) noexcept;
    Token(const Token&   rhs)         ;
   ~Token();

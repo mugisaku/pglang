@@ -5,6 +5,7 @@
 #include<cstdint>
 #include<string>
 #include"pglang_parser__token.hpp"
+#include"pglang_expr__operator.hpp"
 
 
 #ifndef report
@@ -26,7 +27,6 @@ class
 Stream: public Tag
 {
   std::string  get_string_literal();
-  std::string  get_identifier_literal();
   uint64_t     get_character_literal();
 
   char32_t  get_escchar();
@@ -45,14 +45,6 @@ Stream: public Tag
 
 public:
   Stream(const char*  p);
-
-  operator bool() const;
-
-  char  operator*() const;
-
-  void  skip_spaces();
-
-  void  advance();
 
   Token  get_token();
 

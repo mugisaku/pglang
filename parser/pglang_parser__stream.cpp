@@ -21,137 +21,6 @@ Tag(p)
 
 
 
-Stream::
-operator bool() const
-{
-  return *pointer;
-}
-
-
-char
-Stream::
-operator*() const
-{
-  return *pointer;
-}
-
-
-void
-Stream::
-advance()
-{
-  ++pointer;
-}
-
-
-void
-Stream::
-skip_spaces()
-{
-    for(;;)
-    {
-      auto  c = *pointer;
-
-        if(isspace(c))
-        {
-          pointer += 1;
-
-            if(c == '\n')
-            {
-              base_pointer = pointer;
-
-              row_number += 1;
-            }
-        }
-
-      else
-        {
-          break;
-        }
-    }
-}
-
-
-/*
-Operator
-Stream::
-get_operator()
-{
-       if(std::strncmp(pointer,"...",3) == 0){  pointer += 3;  return Operator('.','.','.');}
-  else if(std::strncmp(pointer,"<<=",3) == 0){  pointer += 3;  return Operator('<','<','=');}
-  else if(std::strncmp(pointer,">>=",3) == 0){  pointer += 3;  return Operator('>','>','=');}
-  else if(std::strncmp(pointer,"+=",2) == 0){  pointer += 2;  return Operator('+','=');}
-  else if(std::strncmp(pointer,"++",2) == 0){  pointer += 2;  return Operator('+','+');}
-  else if(std::strncmp(pointer,"-=",2) == 0){  pointer += 2;  return Operator('-','=');}
-  else if(std::strncmp(pointer,"--",2) == 0){  pointer += 2;  return Operator('-','-');}
-  else if(std::strncmp(pointer,"*=",2) == 0){  pointer += 2;  return Operator('*','=');}
-  else if(std::strncmp(pointer,"/=",2) == 0){  pointer += 2;  return Operator('/','=');}
-  else if(std::strncmp(pointer,"%=",2) == 0){  pointer += 2;  return Operator('%','=');}
-  else if(std::strncmp(pointer,"|=",2) == 0){  pointer += 2;  return Operator('|','=');}
-  else if(std::strncmp(pointer,"&=",2) == 0){  pointer += 2;  return Operator('&','=');}
-  else if(std::strncmp(pointer,"^=",2) == 0){  pointer += 2;  return Operator('^','=');}
-  else if(std::strncmp(pointer,"==",2) == 0){  pointer += 2;  return Operator('=','=');}
-  else if(std::strncmp(pointer,"!=",2) == 0){  pointer += 2;  return Operator('!','=');}
-  else if(std::strncmp(pointer,"<=",2) == 0){  pointer += 2;  return Operator('<','=');}
-  else if(std::strncmp(pointer,">=",2) == 0){  pointer += 2;  return Operator('>','=');}
-  else if(std::strncmp(pointer,"<<",2) == 0){  pointer += 2;  return Operator('<','<');}
-  else if(std::strncmp(pointer,">>",2) == 0){  pointer += 2;  return Operator('>','>');}
-  else if(std::strncmp(pointer,"&&",2) == 0){  pointer += 2;  return Operator('&','&');}
-  else if(std::strncmp(pointer,"||",2) == 0){  pointer += 2;  return Operator('|','|');}
-  else if(std::strncmp(pointer,"::",2) == 0){  pointer += 2;  return Operator(':',':');}
-  else if(std::strncmp(pointer,"->",2) == 0){  pointer += 2;  return Operator('-','>');}
-  else if(*pointer == '+'){  pointer += 1;  return Operator('+');}
-  else if(*pointer == '-'){  pointer += 1;  return Operator('-');}
-  else if(*pointer == '*'){  pointer += 1;  return Operator('*');}
-  else if(*pointer == '/'){  pointer += 1;  return Operator('/');}
-  else if(*pointer == '%'){  pointer += 1;  return Operator('%');}
-  else if(*pointer == '|'){  pointer += 1;  return Operator('|');}
-  else if(*pointer == '&'){  pointer += 1;  return Operator('&');}
-  else if(*pointer == '^'){  pointer += 1;  return Operator('^');}
-  else if(*pointer == '!'){  pointer += 1;  return Operator('!');}
-  else if(*pointer == '='){  pointer += 1;  return Operator('=');}
-  else if(*pointer == '<'){  pointer += 1;  return Operator('<');}
-  else if(*pointer == '>'){  pointer += 1;  return Operator('>');}
-  else if(*pointer == '~'){  pointer += 1;  return Operator('~');}
-  else if(*pointer == ','){  pointer += 1;  return Operator(',');}
-  else if(*pointer == '.'){  pointer += 1;  return Operator('.');}
-  else if(*pointer == ':'){  pointer += 1;  return Operator(':');}
-  else if(*pointer == '?'){  pointer += 1;  return Operator('?');}
-
-
-  printf("不明な演算子です\n");
-
-  throw;
-}
-*/
-
-
-namespace{
-bool
-isoperator(int  c)
-{
-  return((c == '+') ||
-         (c == '-') ||
-         (c == '*') ||
-         (c == '/') ||
-         (c == '%') ||
-         (c == '!') ||
-         (c == '<') ||
-         (c == '>') ||
-         (c == '=') ||
-         (c == '&') ||
-         (c == '|') ||
-         (c == '^') ||
-         (c == '~') ||
-         (c == '?') ||
-         (c == '#') ||
-         (c == '.') ||
-         (c == ',') ||
-         (c == ':'));
-}
-}
-
-
 Token
 Stream::
 get_token()
@@ -167,9 +36,7 @@ get_token()
 
     if(isoperator(c))
     {
-      ++pointer;
-
-      tok = Token(tag,static_cast<uint64_t>(c),TokenKind::operator_);
+      tok = Token(tag,get_operator());
     }
 
   else
@@ -217,7 +84,7 @@ get_token()
 
       else
         {
-          tok = Token(tag,i,TokenKind::integer);
+          tok = Token(tag,i);
         }
     }
 
@@ -234,7 +101,7 @@ get_token()
     {
       ++pointer;
 
-      tok = Token(tag,get_character_literal(),TokenKind::integer);
+      tok = Token(tag,get_character_literal());
     }
 
   else
@@ -291,6 +158,14 @@ get_token()
       pointer += 1;
 
       tok = Token(tag,SemiColon());
+    }
+
+  else
+    if(c == ',')
+    {
+      pointer += 1;
+
+      tok = Token(tag,Comma());
     }
 
 
