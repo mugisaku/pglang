@@ -19,6 +19,11 @@ Book
 public:
   Book(Stream&  s);
 
+
+  const std::vector<Definition>*  operator->() const;
+
+  const Definition*  find(const char*  name) const;
+
   void  print() const;
 
 };

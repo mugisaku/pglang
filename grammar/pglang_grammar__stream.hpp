@@ -5,7 +5,6 @@
 #include"pglang_parser__tag.hpp"
 #include"pglang_grammar__definition.hpp"
 #include"pglang_grammar__group.hpp"
-#include"pglang_grammar__element.hpp"
 
 
 namespace pglang{

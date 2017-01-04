@@ -4,11 +4,13 @@
 
 #include<vector>
 #include"pglang_expr__operator.hpp"
-#include"pglang_parser__token.hpp"
 
 
 namespace pglang{
 namespace parser{
+
+
+struct Token;
 
 
 using TokenList = std::vector<Token>;
@@ -20,14 +22,15 @@ struct Stream;
 class
 Block
 {
-  const int   open_char;
-  const int  close_char;
-
   TokenList  token_list;
 
 public:
-  Block(Stream&  s, int  open_c=0, int  close_c=0);
+  const int  beginning_character;
+  const int     ending_character;
 
+  Block(Stream&  s, int  begin_c=0, int  end_c=0);
+
+  const TokenList&  operator*() const;
   const TokenList*  operator->() const;
 
   void  print(int  indent=0) const;

@@ -3,11 +3,21 @@
 
 
 #include"pglang_grammar__book.hpp"
+#include"pglang_grammar__node.hpp"
+#include"pglang_grammar__symbol.hpp"
 #include"pglang_grammar__group.hpp"
 #include"pglang_grammar__definition.hpp"
-#include"pglang_grammar__element.hpp"
+#include"pglang_grammar__stream.hpp"
 
 
+namespace pglang{
+namespace grammar{
+
+
+Node*  start_check(const Book&  book, const char*  name, const parser::Block&  blk);
+
+
+}}
 
 
 #endif

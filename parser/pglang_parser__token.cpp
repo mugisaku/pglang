@@ -17,7 +17,10 @@ Token::Token(const Tag&  tag_, uint64_t  i): tag(tag_), kind(TokenKind::integer)
 Token::Token(const Tag&  tag_, double  f):   tag(tag_), kind(TokenKind::floating_point_number){data.f = f;}
 Token::Token(const Tag&  tag_, Operator&&  op):   tag(tag_), kind(TokenKind::operator_){data.operator_ = op;}
 Token::Token(const Tag&  tag_, std::string&&  s, TokenKind  k): tag(tag_), kind(k){new(&data.s) std::string(std::move(s));}
-Token::Token(const Tag&  tag_, Block*  blk): tag(tag_), kind(TokenKind::block){data.blk = blk;}
+Token::Token(const Tag&  tag_, Block&&  blk): tag(tag_), kind(TokenKind::block){new(&data.blk) Block(std::move(blk));}
+Token::Token(const Tag&  tag_, NullPtr&&  n): tag(tag_), kind(TokenKind::nullptr_){}
+Token::Token(const Tag&  tag_, True&&  t): tag(tag_), kind(TokenKind::true_){}
+Token::Token(const Tag&  tag_, False&&  f): tag(tag_), kind(TokenKind::false_){}
 Token::Token(const Tag&  tag_, SemiColon&&  semicolon): tag(tag_), kind(TokenKind::semicolon){}
 Token::Token(const Tag&  tag_, Comma&&  comma): tag(tag_), kind(TokenKind::comma){}
 Token::Token(      Token&&  rhs) noexcept: kind(TokenKind::null){*this = std::move(rhs);}
@@ -58,10 +61,13 @@ operator=(Token&&  rhs) noexcept
       new(&data.s) std::string(std::move(rhs.data.s));
       break;
   case(TokenKind::block):
-      data.blk = rhs.data.blk;
+      new(&data.blk) Block(std::move(rhs.data.blk));
       break;
   case(TokenKind::semicolon):
   case(TokenKind::comma):
+  case(TokenKind::nullptr_):
+  case(TokenKind::true_):
+  case(TokenKind::false_):
       break;
     }
 
@@ -99,10 +105,13 @@ operator=(const Token&  rhs)
       new(&data.s) std::string(rhs.data.s);
       break;
   case(TokenKind::block):
-      data.blk = new Block(*rhs.data.blk);
+      new(&data.blk) Block(rhs.data.blk);
       break;
   case(TokenKind::semicolon):
   case(TokenKind::comma):
+  case(TokenKind::nullptr_):
+  case(TokenKind::true_):
+  case(TokenKind::false_):
       break;
     }
 
@@ -123,6 +132,9 @@ clear()
   case(TokenKind::operator_):
   case(TokenKind::semicolon):
   case(TokenKind::comma):
+  case(TokenKind::nullptr_):
+  case(TokenKind::true_):
+  case(TokenKind::false_):
       break;
   case(TokenKind::string):
   case(TokenKind::identifier):
@@ -131,7 +143,7 @@ clear()
       data.s.~basic_string();
       break;
   case(TokenKind::block):
-      delete data.blk;
+      data.blk.~Block();
       break;
     }
 
@@ -143,6 +155,9 @@ clear()
 const TokenData*  Token::operator->() const{return &data;}
 
 TokenKind  Token::get_kind() const{return kind;}
+
+
+const Tag&  Token::get_tag() const{return tag;}
 
 
 namespace{
@@ -208,13 +223,22 @@ print(int  indent) const
       printf("%s",data.operator_.codes);
       break;
   case(TokenKind::block):
-      data.blk->print(indent+1);
+      data.blk.print(indent+1);
       break;
   case(TokenKind::semicolon):
       printf(";\n");
       break;
   case(TokenKind::comma):
       printf(",");
+      break;
+  case(TokenKind::nullptr_):
+      printf("nullptr");
+      break;
+  case(TokenKind::true_):
+      printf("true");
+      break;
+  case(TokenKind::false_):
+      printf("false");
       break;
     }
 }

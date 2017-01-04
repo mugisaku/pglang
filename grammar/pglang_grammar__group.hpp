@@ -15,6 +15,7 @@ GroupKind
   regular,
   repetition,
   option,
+
 };
 
 
@@ -26,10 +27,9 @@ Separator
 };
 
 
-struct Element;
+struct Symbol;
 
-
-using ElementList = std::vector<Element>;
+using SymbolList = std::vector<Symbol>;
 
 
 class
@@ -39,22 +39,27 @@ Group
 
   Separator  separator;
 
-  ElementList  element_list;
+  SymbolList  symbol_list;
 
 public:
   Group();
 
-  const ElementList*  operator->() const;
+  const SymbolList&  operator*() const;
+  const SymbolList*  operator->() const;
 
   void  change_separator(char  c);
 
   const Separator&  get_separator() const;
 
-  void  append(Element&&  e);
+  bool  is_optional() const;
+  bool  is_repetitional() const;
+
+  void  append(Symbol&&  sym);
 
   void  change_kind(GroupKind  k);
 
   GroupKind  get_kind() const;
+
 
   void  print() const;
 

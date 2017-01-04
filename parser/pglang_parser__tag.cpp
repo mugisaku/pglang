@@ -118,7 +118,7 @@ get_operator()
   else if(*pointer == '?'){  pointer += 1;  return Operator('?');}
 
 
-  printf("不明な演算子です\n");
+  printf("%c 不明な演算子です\n",*pointer);
 
   throw;
 }
@@ -171,7 +171,7 @@ print() const
     }
 
 
-  printf("%4d行,%4d列:\n",row_number+1,col);
+  printf("[%4d行,%4d列]: ",row_number+1,col);
 
   p = base_pointer;
 

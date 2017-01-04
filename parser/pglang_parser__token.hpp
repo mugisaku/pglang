@@ -6,6 +6,7 @@
 #include<string>
 #include"pglang_parser__tag.hpp"
 #include"pglang_expr__operator.hpp"
+#include"pglang_parser__block.hpp"
 
 
 #ifndef report
@@ -22,6 +23,9 @@ TokenKind
 {
   null,
 
+  nullptr_,
+  true_,
+  false_,
   integer,
   floating_point_number,
   string,
@@ -50,7 +54,7 @@ TokenData
 
   Operator  operator_;
 
-  Block*  blk;
+  Block  blk;
 
    TokenData(){}
   ~TokenData(){}
@@ -60,6 +64,9 @@ TokenData
 
 struct SemiColon{};
 struct Comma{};
+struct NullPtr{};
+struct True{};
+struct False{};
 
 
 class
@@ -76,9 +83,12 @@ public:
    Token(const Tag&  tag_, double  f);
    Token(const Tag&  tag_, Operator&&  op);
    Token(const Tag&  tag_, std::string&&  s, TokenKind  k);
-   Token(const Tag&  tag_, Block*  blk);
+   Token(const Tag&  tag_, Block&&  blk);
    Token(const Tag&  tag_, SemiColon&&  semicolon);
    Token(const Tag&  tag_, Comma&&  comma);
+   Token(const Tag&  tag_, NullPtr&&  n);
+   Token(const Tag&  tag_, True&&  t);
+   Token(const Tag&  tag_, False&&  f);
    Token(      Token&&  rhs) noexcept;
    Token(const Token&   rhs)         ;
   ~Token();
@@ -91,6 +101,8 @@ public:
   const TokenData*  operator->() const;
 
   TokenKind  get_kind() const;
+
+  const Tag&  get_tag() const;
 
   void  print(int  indent=0) const;
 

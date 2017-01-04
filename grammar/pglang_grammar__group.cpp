@@ -1,5 +1,5 @@
 #include"pglang_grammar__group.hpp"
-#include"pglang_grammar__element.hpp"
+#include"pglang_grammar__symbol.hpp"
 
 
 
@@ -19,13 +19,17 @@ kind(GroupKind::regular)
 
 
 
-const ElementList*  Group::operator->() const{return &element_list;}
+const SymbolList&  Group::operator*() const{return symbol_list;}
+const SymbolList*  Group::operator->() const{return &symbol_list;}
 
 void  Group::change_separator(char  c){separator.c = c;}
 
 const Separator&  Group::get_separator() const{return separator;}
 
-void  Group::append(Element&&  e){element_list.emplace_back(std::move(e));}
+void  Group::append(Symbol&&  sym){symbol_list.emplace_back(std::move(sym));}
+
+bool  Group::is_optional() const{return((kind == GroupKind::option) || (kind == GroupKind::repetition));}
+bool  Group::is_repetitional() const{return(kind == GroupKind::repetition);}
 
 void  Group::change_kind(GroupKind  k){kind = k;}
 
@@ -58,10 +62,10 @@ print() const
 
   printf("%c",open);
 
-    if(element_list.size())
+    if(symbol_list.size())
     {
-      auto   it = element_list.cbegin();
-      auto  end = element_list.cend();
+      auto   it = symbol_list.cbegin();
+      auto  end = symbol_list.cend();
 
       it++->print();
 

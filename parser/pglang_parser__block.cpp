@@ -1,5 +1,6 @@
 #include"pglang_parser__block.hpp"
 #include"pglang_parser__stream.hpp"
+#include"pglang_parser__token.hpp"
 #include"pglang_parser__unicode.hpp"
 
 
@@ -12,9 +13,9 @@ namespace parser{
 
 
 Block::
-Block(Stream&  s, int  open_c, int  close_c):
-open_char(open_c),
-close_char(close_c)
+Block(Stream&  s, int  begin_c, int  end_c):
+beginning_character(begin_c),
+ending_character(end_c)
 {
   s.skip_spaces();
 
@@ -24,7 +25,7 @@ close_char(close_c)
     {
         while(s)
         {
-            if(*s == close_c)
+            if(*s == ending_character)
             {
               s.advance();
 
@@ -50,6 +51,14 @@ close_char(close_c)
 
 
 
+const TokenList&
+Block::
+operator*() const
+{
+  return token_list;
+}
+
+
 const TokenList*
 Block::
 operator->() const
@@ -62,9 +71,9 @@ void
 Block::
 print(int  indent) const
 {
-    if(open_char)
+    if(beginning_character)
     {
-      printf("%c",open_char);
+      printf("%c",beginning_character);
     }
 
 
@@ -76,9 +85,9 @@ print(int  indent) const
     }
 
 
-    if(close_char)
+    if(ending_character)
     {
-      printf("%c",close_char);
+      printf("%c",ending_character);
     }
 }
 

@@ -1,5 +1,6 @@
 #include"pglang_grammar__definition.hpp"
-#include"pglang_grammar__element.hpp"
+#include"pglang_grammar__symbol.hpp"
+#include"pglang_grammar__book.hpp"
 
 
 
@@ -11,10 +12,10 @@ namespace grammar{
 
 
 Definition::
-Definition(std::string&&   name_, int  open_, int  close_, Group&&  grp):
+Definition(std::string&&   name_, int  begin_, int  end_, Group&&  grp):
 name(std::move(name_)),
-open(open_),
-close(close_),
+beginning_character(begin_),
+ending_character(end_),
 group(std::move(grp))
 {
 }
@@ -42,7 +43,15 @@ void
 Definition::
 print() const
 {
-  printf("%s%c%c = ",name.data(),open,close);
+  printf("%s",name.data());
+
+    if(beginning_character)
+    {
+      printf("%c%c",beginning_character,ending_character);
+    }
+
+
+  printf(" = ");
 
   group.print();
 

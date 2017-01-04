@@ -86,7 +86,8 @@ OBJ =                          \
   expr/pglang_expr__literal.o       \
   expr/pglang_expr__initializer.o   \
   expr/pglang_expr.o                \
-  grammar/pglang_grammar__element.o     \
+  grammar/pglang_grammar.o              \
+  grammar/pglang_grammar__symbol.o      \
   grammar/pglang_grammar__group.o       \
   grammar/pglang_grammar__definition.o  \
   grammar/pglang_grammar__book.o        \
@@ -98,13 +99,14 @@ OBJ =                          \
   vm/pglang_vm__context.o         \
 
 
-all: $(OBJ)
-	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
-	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
+all: $(OBJ) 
+#	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
+#	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
+	$(CXX) -o test_grammar test_grammar.cpp $(OBJ) $(CXXFLAGS)
 
 
 clean:
-	rm -f $(OBJ) test_type test_parser log
+	rm -f $(OBJ) test_type test_parser test_grammar log
 
 
 

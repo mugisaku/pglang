@@ -1,4 +1,9 @@
-initializer_list:{} = {[literal:{",":literal}]};
+
+
+initializer_list:{} = literal;
+
+
+elements = {initializer_list};
 
 
 unary_operator =

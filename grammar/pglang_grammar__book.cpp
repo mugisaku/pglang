@@ -1,5 +1,5 @@
 #include"pglang_grammar__book.hpp"
-#include"pglang_grammar__element.hpp"
+#include"pglang_grammar__symbol.hpp"
 
 
 
@@ -15,13 +15,31 @@ Book(Stream&  s)
 {
     while(s)
     {
-      auto  def = s.get_definition();
-
-      definition_list.emplace_back(std::move(def));
+      definition_list.emplace_back(s.get_definition());
     }
 }
 
 
+
+
+const std::vector<Definition>*  Book::operator->() const{return &definition_list;}
+
+
+const Definition*
+Book::
+find(const char*  name) const
+{
+    for(auto&  def: definition_list)
+    {
+        if(def.get_name() == name)
+        {
+          return &def;
+        }
+    }
+
+
+  return nullptr;
+}
 
 
 void

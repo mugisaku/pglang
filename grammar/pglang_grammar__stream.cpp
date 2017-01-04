@@ -1,4 +1,5 @@
 #include"pglang_grammar__stream.hpp"
+#include"pglang_grammar__symbol.hpp"
 #include<cctype>
 
 
@@ -6,6 +7,15 @@
 
 namespace pglang{
 namespace grammar{
+
+
+
+
+Stream::
+Stream(const char*  p):
+Tag(p)
+{
+}
 
 
 
@@ -42,13 +52,13 @@ get_group(int  open, int  close)
     {
       auto  c = *pointer;
 
-      Element  e;
+      Symbol  sym;
 
         if(c == '{')
         {
           ++pointer;
 
-          e = Element(get_group('{','}'));
+          sym = Symbol(get_group('{','}'));
         }
 
       else
@@ -56,7 +66,7 @@ get_group(int  open, int  close)
         {
           ++pointer;
 
-          e = Element(get_group('(',')'));
+          sym = Symbol(get_group('(',')'));
         }
 
       else
@@ -64,7 +74,7 @@ get_group(int  open, int  close)
         {
           ++pointer;
 
-          e = Element(get_group('[',']'));
+          sym = Symbol(get_group('[',']'));
         }
 
       else
@@ -72,7 +82,7 @@ get_group(int  open, int  close)
         {
           ++pointer;
 
-          e = Element(get_identifier_literal(),ElementKind::keyword);
+          sym = Symbol(get_identifier_literal(),SymbolKind::keyword);
         }
 
       else
@@ -92,7 +102,7 @@ get_group(int  open, int  close)
 
           ++pointer;
 
-          e = Element(std::move(op));
+          sym = Symbol(std::move(op));
         }
 
       else
@@ -100,26 +110,33 @@ get_group(int  open, int  close)
         {
           auto  s = get_identifier_literal();
 
-          auto  k = ElementKind::reference;
+          auto  k = SymbolKind::reference;
 
-               if(s == "identifier"){k = ElementKind::identifier;}
-          else if(s ==    "literal"){k = ElementKind::literal;}
+               if(s == "identifier"){k = SymbolKind::identifier;}
+          else if(s ==    "literal"){k = SymbolKind::literal;}
+          else if(s ==      "comma"){k = SymbolKind::comma;}
+          else if(s ==  "semicolon"){k = SymbolKind::semicolon;}
 
-          e = Element(std::move(s),k);
+
+          sym = Symbol(std::move(s),k);
         }
 
       else
         {
           printf("不明な要素です\n");
 
+          print();
+
           throw;
         }
 
 
-      grp.append(std::move(e));
+      grp.append(std::move(sym));
 
 
       c = *pointer++;
+
+      skip_spaces();
 
         if(c == close)
         {
@@ -127,7 +144,7 @@ get_group(int  open, int  close)
         }
 
 
-        if((c != ':') ||
+        if((c != ':') &&
            (c != '|'))
         {
           printf("%cは分割子ではありません\n",c);
@@ -150,9 +167,6 @@ get_group(int  open, int  close)
 
           throw;
         }
-
-
-      skip_spaces();
     }
 
 

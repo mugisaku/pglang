@@ -125,7 +125,12 @@ get_token()
   else
     if(isalpha(c) || (c == '_'))
     {
-      tok = Token(tag,get_identifier_literal(),TokenKind::identifier);
+      auto  id = get_identifier_literal();
+
+           if(id == "nullptr"){tok = Token(tag,NullPtr());}
+      else if(id ==    "true"){tok = Token(tag,True());}
+      else if(id ==   "false"){tok = Token(tag,False());}
+      else {tok = Token(tag,std::move(id),TokenKind::identifier);}
     }
 
   else
@@ -133,7 +138,7 @@ get_token()
     {
       pointer += 1;
 
-      tok = Token(tag,new Block(*this,'(',')'));
+      tok = Token(tag,Block(*this,'(',')'));
     }
 
   else
@@ -141,7 +146,7 @@ get_token()
     {
       pointer += 1;
 
-      tok = Token(tag,new Block(*this,'{','}'));
+      tok = Token(tag,Block(*this,'{','}'));
     }
 
   else
@@ -149,7 +154,7 @@ get_token()
     {
       pointer += 1;
 
-      tok = Token(tag,new Block(*this,'[',']'));
+      tok = Token(tag,Block(*this,'[',']'));
     }
 
   else

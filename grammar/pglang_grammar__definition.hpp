@@ -4,24 +4,29 @@
 
 #include<string>
 #include"pglang_grammar__group.hpp"
+#include"pglang_parser__block.hpp"
 
 
 namespace pglang{
 namespace grammar{
 
 
+struct Book;
+struct Node;
+
+
 class
 Definition
 {
-  int   open;
-  int  close;
-
   std::string  name;
 
   Group  group;
 
 public:
-  Definition(std::string&&   name_, int  open_, int  close_, Group&&  grp);
+  const int   beginning_character;
+  const int      ending_character;
+
+  Definition(std::string&&   name_, int  begin_, int  end_, Group&&  grp);
 
   const std::string&  get_name() const;
 
