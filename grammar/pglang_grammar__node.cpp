@@ -1,4 +1,5 @@
 #include"pglang_grammar__node.hpp"
+#include"pglang_grammar.hpp"
 
 
 
@@ -10,7 +11,7 @@ namespace grammar{
 
 
 Node::
-Node(const Definition&  def, const parser::Token*  tok):
+Node(const Definition*  def, const parser::Token*  tok):
 definition(def),
 token(tok)
 {
@@ -58,17 +59,61 @@ append(Node*  child)
 }
 
 
+size_t
+Node::
+check(const Book&  book)
+{
+  size_t  n = 0;
+
+    if(token && (token->get_kind() == parser::TokenKind::block))
+    {
+      auto  name = definition->get_name().data();
+
+      auto&  blk = (*token)->blk;
+
+      auto  res = start_check(book,name,blk);
+
+        if(res.first)
+        {
+          token = nullptr;
+
+          append(res.second);
+        }
+
+
+      n = 1;
+    }
+
+  else
+    {
+        for(auto  child: children)
+        {
+          n += child->check(book);
+        }
+    }
+
+
+  return n;
+}
+
+
 void
 Node::
 print() const
 {
     if(token)
     {
-      definition.print();
+        if(token->get_kind() == parser::TokenKind::block)
+        {
+          printf("%c--",(*token)->blk.beginning_character);
+          printf("%c",(*token)->blk.ending_character);
+        }
 
-      printf("::");
+      else
+        {
+          token->print();
+        }
 
-      token->print();
 
       printf("\n");
     }

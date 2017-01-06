@@ -78,19 +78,22 @@ get_group(int  open, int  close)
         }
 
       else
-        if(c == '%')
-        {
-          ++pointer;
-
-          sym = Symbol(get_identifier_literal(),SymbolKind::keyword);
-        }
-
-      else
         if(c == '\"')
         {
           ++pointer;
 
-          auto  op = get_operator();
+          c = *pointer;
+
+            if(isalpha(c) || (c == '_'))
+            {
+              sym = Symbol(get_identifier_literal(),SymbolKind::keyword);
+            }
+
+          else
+            {
+              sym = Symbol(get_operator());
+            }
+
 
             if(*pointer != '\"')
             {
@@ -101,8 +104,6 @@ get_group(int  open, int  close)
 
 
           ++pointer;
-
-          sym = Symbol(std::move(op));
         }
 
       else
@@ -116,7 +117,6 @@ get_group(int  open, int  close)
           else if(s ==    "literal"){k = SymbolKind::literal;}
           else if(s ==      "comma"){k = SymbolKind::comma;}
           else if(s ==  "semicolon"){k = SymbolKind::semicolon;}
-
 
           sym = Symbol(std::move(s),k);
         }

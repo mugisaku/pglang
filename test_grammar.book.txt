@@ -1,6 +1,24 @@
 
 
-initializer_list:{} = literal;
+parameter = identifier:[identifier];
+
+parameter_list:() = [parameter:{comma:parameter}];
+
+function_declaration = "function":identifier:["=":identifier:parameter_list:[function_definition]];
+
+function_definition:{} = {statement};
+
+
+statement = return_statement|semicolon;
+
+
+return_statement = "return";
+
+
+
+initializer = literal|identifier;
+
+initializer_list:{} = [initializer:{comma:initializer}:[comma]];
 
 
 elements = {initializer_list};

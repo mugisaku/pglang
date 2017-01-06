@@ -135,7 +135,7 @@ print() const
     {
   case(SymbolKind::literal):    printf("<literal>");break;
   case(SymbolKind::identifier): printf("<identifier>");break;
-  case(SymbolKind::keyword):    printf("%%%s",data.string.data());break;
+  case(SymbolKind::keyword):    printf("\"%s\"",data.string.data());break;
   case(SymbolKind::operator_):  printf("\"%s\"",data.operator_.codes);break;
   case(SymbolKind::reference):  printf("%s",data.string.data());break;
   case(SymbolKind::group): data.group.print();break;

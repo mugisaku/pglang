@@ -14,7 +14,10 @@ namespace pglang{
 namespace grammar{
 
 
-Node*  start_check(const Book&  book, const char*  name, const parser::Block&  blk);
+using Result = std::pair<bool,Node*>;
+
+
+Result  start_check(const Book&  book, const char*  name, const parser::Block&  blk);
 
 
 }}

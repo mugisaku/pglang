@@ -181,7 +181,7 @@ print() const
     }
 
 
-  printf("◇");
+  printf("■");
 
     while(*p)
     {
