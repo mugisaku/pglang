@@ -51,7 +51,7 @@ main(int  argc, char**  argv)
 
   grammar::Book  book(gst);
 
-  auto  res = grammar::start_check(book,"function_declaration",pblk);
+  auto  res = grammar::start_check(book,"object",pblk);
 
   printf("book{\n");
 
@@ -65,10 +65,12 @@ main(int  argc, char**  argv)
 
         while(res.second->check(book))
         {
-          res.second->print();
-
-          printf("**\n");
         }
+
+
+      res.second->print();
+
+      printf("**\n");
     }
 
 

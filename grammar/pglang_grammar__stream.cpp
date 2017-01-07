@@ -134,6 +134,8 @@ get_group(int  open, int  close)
       grp.append(std::move(sym));
 
 
+      skip_spaces();
+
       c = *pointer++;
 
       skip_spaces();
@@ -148,6 +150,8 @@ get_group(int  open, int  close)
            (c != '|'))
         {
           printf("%cは分割子ではありません\n",c);
+
+          Tag::print();
 
           throw;
         }

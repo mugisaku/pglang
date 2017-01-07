@@ -11,8 +11,9 @@ namespace grammar{
 
 
 Node::
-Node(const Definition*  def, const parser::Token*  tok):
+Node(const Definition&  def, const parser::Token*  tok, bool  kw):
 definition(def),
+keyword_flag(kw),
 token(tok)
 {
 }
@@ -67,7 +68,7 @@ check(const Book&  book)
 
     if(token && (token->get_kind() == parser::TokenKind::block))
     {
-      auto  name = definition->get_name().data();
+      auto  name = definition.get_name().data();
 
       auto&  blk = (*token)->blk;
 
@@ -103,6 +104,16 @@ print() const
 {
     if(token)
     {
+      printf("[%s]",definition.get_name().data());
+
+        if(keyword_flag)
+        {
+          printf("KEYWORD");
+        }
+
+
+      printf("  ");
+
         if(token->get_kind() == parser::TokenKind::block)
         {
           printf("%c--",(*token)->blk.beginning_character);

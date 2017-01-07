@@ -1,6 +1,1 @@
-function fn = int(int  x, int  y)
-{
-  return;
-}
-
-
+0 1 2 3 x

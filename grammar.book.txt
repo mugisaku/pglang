@@ -1,0 +1,85 @@
+expression = expression_element:{expression_element};
+
+packed_expression:() = expression;
+
+argument_list:() = [expression:{comma:expression}];
+subscript:[]     = [expression                   ];
+
+expression_element =
+     unary_operator|
+            literal|
+         identifier|
+  packed_expression|
+      argument_list|
+          subscript|
+    binary_operator;
+
+
+
+
+parameter = identifier:[identifier];
+
+parameter_list:() = [parameter:{comma:parameter}];
+
+function_declaration = "function":identifier:["=":identifier:parameter_list:[function_definition]];
+
+function_definition:{} = {statement};
+
+
+statement = return_statement|expression|semicolon;
+
+
+return_statement = "return":[expression];
+
+
+
+initializer = literal|identifier|expression;
+
+initializer_list:{} = [initializer:{comma:initializer}:[comma]];
+
+
+elements = {initializer_list};
+
+
+unary_operator =
+  "+"|
+  "-"|
+  "*"|
+  "!"|
+  "~";
+
+
+binary_operator =
+  "+"|
+  "-"|
+  "*"|
+  "/"|
+  "%"|
+  "|"|
+  "&"|
+  "^"|
+  "&&"|
+  "||"|
+  "=="|
+  "!="|
+  "<"|
+  "<="|
+  ">"|
+  ">="|
+  "<<"|
+  ">>"|
+  "+="|
+  "-="|
+  "*="|
+  "/="|
+  "%="|
+  "<<="|
+  ">>="|
+  "&="|
+  "|="|
+  "^="|
+  "="|
+  "->"|
+  ".";
+
+

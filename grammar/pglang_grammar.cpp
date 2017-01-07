@@ -1,6 +1,5 @@
 #include"pglang_grammar.hpp"
-#include<utility>
-#include<memory>
+#include<vector>
 
 
 
@@ -20,17 +19,21 @@ Context
 {
   const Book&  book;
 
-  const Definition&  definition;
+  std::vector<const Definition*>  definition_stack;
 
   Iterator   it;
   Iterator  end;
 
   Context(const Book&  book_, const Definition&  def):
-  book(book_),
-  definition(def)
-  {}
+  book(book_)
+  {
+
+    definition_stack.emplace_back(&def);
+  }
 
   operator bool() const{return it != end;}
+
+  const Definition&  operator*() const{return *definition_stack.back();}
 
 };
 
@@ -57,7 +60,7 @@ Result  check_symbol(Context&  ctx, const Symbol&  sym);
 Result
 check_whether_it_matches_one(Context&  ctx, const Group&  grp)
 {
-  Node*  nd = new Node(&ctx.definition);
+  Node*  nd = new Node(*ctx);
 
   auto  start = ctx.it;
 
@@ -100,7 +103,7 @@ check_whether_it_matches_one(Context&  ctx, const Group&  grp)
 Result
 check_whether_it_matches_all(Context&  ctx, const Group&  grp)
 {
-  Node*  nd = new Node(&ctx.definition);
+  Node*  nd = new Node(*ctx);
 
   auto  start = ctx.it;
 
@@ -138,7 +141,7 @@ check_whether_it_matches_all(Context&  ctx, const Group&  grp)
 Result
 check_group(Context&  ctx, const Group&  grp)
 {
-  auto  nd = new Node(&ctx.definition);
+  auto  nd = new Node(*ctx);
 
   bool  b;
 
@@ -193,7 +196,6 @@ check_group(Context&  ctx, const Group&  grp)
     }
 
 
-
   return std::make_pair(b,nd);
 }
 
@@ -203,7 +205,7 @@ check_symbol(Context&  ctx, const Symbol&  sym)
 {
   const parser::Token&  tok = *ctx.it;
 
-  auto  def = &ctx.definition;
+  auto&  def = *ctx;
 
   auto  k = tok.get_kind();
 
@@ -212,7 +214,7 @@ if(0)
 printf("<test>\n  token = ");
 tok.print();
 printf("\n  definition = ");
-def->print();
+def.print();
 printf("\n  symbol = ");
 sym.print();
 printf("\n</test>\n");
@@ -233,7 +235,7 @@ printf("\n</test>\n");
         {
           ++ctx.it;
 
-          return std::make_pair(true,new Node(def,&tok));
+          return std::make_pair(true,new Node(def,&tok,true));
         }
       break;
   case(SymbolKind::identifier):
@@ -259,6 +261,8 @@ printf("\n</test>\n");
 
         if(rdef)
         {
+          ctx.definition_stack.emplace_back(rdef);
+
             if(rdef->beginning_character)
             {
                 if(k == parser::TokenKind::block)
@@ -268,7 +272,7 @@ printf("\n</test>\n");
                     {
                       ++ctx.it;
 
-                      return std::make_pair(true,new Node(rdef,&tok));
+                      return std::make_pair(true,new Node(*rdef,&tok));
                     }
                 }
             }
