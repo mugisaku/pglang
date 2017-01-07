@@ -79,7 +79,7 @@ get_decimal_integer_literal()
     while(get_decimal_number(i))
     {
       v *= 10;
-      v |=  i;
+      v +=  i;
     }
 
 

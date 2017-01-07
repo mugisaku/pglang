@@ -102,11 +102,12 @@ OBJ =                          \
 all: $(OBJ) 
 #	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
 #	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
-	$(CXX) -o test_grammar test_grammar.cpp $(OBJ) $(CXXFLAGS)
+#	$(CXX) -o test_grammar test_grammar.cpp $(OBJ) $(CXXFLAGS)
+	$(CXX) -o test_node test_node.cpp $(OBJ) $(CXXFLAGS)
 
 
 clean:
-	rm -f $(OBJ) test_type test_parser test_grammar log
+	rm -f $(OBJ) test_type test_parser test_grammar test_node log
 
 
 

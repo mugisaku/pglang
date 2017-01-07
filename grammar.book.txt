@@ -1,18 +1,11 @@
-expression = expression_element:{expression_element};
+expression = operand:{binary_operator:operand};
 
 packed_expression:() = expression;
 
 argument_list:() = [expression:{comma:expression}];
 subscript:[]     = [expression                   ];
 
-expression_element =
-     unary_operator|
-            literal|
-         identifier|
-  packed_expression|
-      argument_list|
-          subscript|
-    binary_operator;
+operand = {unary_operator}:(literal|identifier|packed_expression):[argument_list|subscript];
 
 
 
