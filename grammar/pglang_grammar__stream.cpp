@@ -182,6 +182,8 @@ Definition
 Stream::
 get_definition()
 {
+RESTART:
+
   skip_spaces();
 
   auto  c = *pointer;
@@ -215,6 +217,25 @@ get_definition()
       ++pointer;
 
       return Definition(std::move(name),open,close,get_group('(',';'));
+    }
+
+  else
+    if(c == '#')
+    {
+      ++pointer;
+
+        while(*pointer)
+        {
+          c = *pointer++;
+
+            if(c == '\n')
+            {
+              break;
+            }
+        }
+
+
+      goto RESTART;
     }
 
 

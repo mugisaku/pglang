@@ -66,14 +66,6 @@ check_whether_it_matches_one(Context&  ctx, const Group&  grp)
 
     for(auto&  sym: *grp)
     {
-        if(!ctx)
-        {
-          break;
-        }
-
-
-      auto  point = ctx.it;
-
       auto  res = check_symbol(ctx,sym);
 
         if(res.first)
@@ -85,14 +77,12 @@ check_whether_it_matches_one(Context&  ctx, const Group&  grp)
 
       else
         {
-          ctx.it = point;
+          ctx.it = start;
 
           delete res.second;
         }
     }
 
-
-  ctx.it = start;
 
   delete nd;
 
@@ -109,19 +99,7 @@ check_whether_it_matches_all(Context&  ctx, const Group&  grp)
 
     for(auto&  sym: *grp)
     {
-        if(!ctx)
-        {
-          ctx.it = start;
-
-          delete nd;
-
-          return std::make_pair(false,nullptr);
-        }
-
-
       Result  res = check_symbol(ctx,sym);
-
-      nd->append(res.second);
 
         if(!res.first)
         {
@@ -131,6 +109,9 @@ check_whether_it_matches_all(Context&  ctx, const Group&  grp)
 
           return std::make_pair(false,nullptr);
         }
+
+
+      nd->append(res.second);
     }
 
 
@@ -203,6 +184,31 @@ check_group(Context&  ctx, const Group&  grp)
 Result
 check_symbol(Context&  ctx, const Symbol&  sym)
 {
+    if(ctx.it == ctx.end)
+    {
+      auto  symk = sym.get_kind();
+
+        if(symk == SymbolKind::group)
+        {
+          return std::make_pair(sym->group.is_optional(),nullptr);
+        }
+
+      else
+        if(symk == SymbolKind::reference)
+        {
+          auto  rdef = ctx.book.find(sym->string.data());
+
+            if(rdef)
+            {
+              return std::make_pair(rdef->get_group().is_optional(),nullptr);
+            }
+        }
+
+
+      return std::make_pair(false,nullptr);
+    }
+
+
   const parser::Token&  tok = *ctx.it;
 
   auto&  def = *ctx;
