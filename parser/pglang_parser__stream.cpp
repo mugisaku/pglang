@@ -1,5 +1,4 @@
 #include"pglang_parser__stream.hpp"
-#include"pglang_parser__block.hpp"
 #include<cctype>
 #include<cstring>
 
@@ -30,13 +29,19 @@ get_token()
 
   auto  c = *pointer;
 
+    if(!c)
+    {
+      return Token();
+    }
+
+
   Tag  tag = *this;
 
   Token  tok;
 
-    if(isoperator(c))
+    if(ispunct(c))
     {
-      tok = Token(tag,get_operator());
+      tok = Token(tag,get_punctuation_string(),TokenKind::pstring);
     }
 
   else
@@ -131,46 +136,6 @@ get_token()
       else if(id ==    "true"){tok = Token(tag,True());}
       else if(id ==   "false"){tok = Token(tag,False());}
       else {tok = Token(tag,std::move(id),TokenKind::identifier);}
-    }
-
-  else
-    if(c == '(')
-    {
-      pointer += 1;
-
-      tok = Token(tag,Block(*this,'(',')'));
-    }
-
-  else
-    if(c == '{')
-    {
-      pointer += 1;
-
-      tok = Token(tag,Block(*this,'{','}'));
-    }
-
-  else
-    if(c == '[')
-    {
-      pointer += 1;
-
-      tok = Token(tag,Block(*this,'[',']'));
-    }
-
-  else
-    if(c == ';')
-    {
-      pointer += 1;
-
-      tok = Token(tag,SemiColon());
-    }
-
-  else
-    if(c == ',')
-    {
-      pointer += 1;
-
-      tok = Token(tag,Comma());
     }
 
 

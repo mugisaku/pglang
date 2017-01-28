@@ -13,6 +13,26 @@ namespace parser{
 
 std::string
 Stream::
+get_punctuation_string()
+{
+  std::string  s;
+
+  auto  c = *pointer;
+
+    while(ispunct(c))
+    {
+      s.push_back(c);
+
+      c = *++pointer;
+    }
+
+
+  return std::move(s);
+}
+
+
+std::string
+Stream::
 get_string_literal()
 {
   std::string  s;

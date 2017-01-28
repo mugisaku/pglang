@@ -13,12 +13,15 @@ namespace pglang{
 namespace grammar{
 
 
+using NodeList = std::vector<Node*>;
+
+
 class
 Node
 {
   const parser::Token*  token;
 
-  std::vector<Node*>  children;
+  NodeList  children;
   
 public:
   const Definition&  definition;
@@ -28,13 +31,44 @@ public:
   Node(const Definition&  def, const parser::Token*  tok=nullptr, bool  kw=false);
  ~Node();
 
-  const std::vector<Node*>*  operator->() const;
+  const NodeList&  operator*() const;
+  const NodeList*  operator->() const;
+
+  bool  operator==(const char*  name) const;
 
   size_t  check(const Book&  book);
 
   void  append(Node*  child);
 
+  const parser::Token&  get_token() const;
+
   void  print() const;
+
+  class Reader{
+          NodeList::const_iterator  pointer    ;
+    const NodeList::const_iterator  pointer_end;
+
+  public:
+    Reader(const Node&  src):
+    pointer(src->cbegin()),
+    pointer_end(src->cend()){}
+
+    operator bool() const{return pointer != pointer_end;}
+
+    const Node&  operator*() const{return **pointer;}
+
+    void  advance()
+    {
+        if(pointer != pointer_end)
+        {
+          ++pointer;
+        }
+    }
+
+  };
+
+
+  Reader  reader() const;
 
 };
 

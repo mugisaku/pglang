@@ -50,11 +50,7 @@ main(int  argc, char**  argv)
 
       open(s,path);
 
-      parser::Stream  st(s.data());
-
-      parser::Block  blk(st);
-
-      blk.print();
+      parser::TokenString  tokstr(s.data());
 
       printf("\n\n");
     }

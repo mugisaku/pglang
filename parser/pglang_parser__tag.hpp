@@ -4,7 +4,6 @@
 
 #include<cstddef>
 #include<string>
-#include"pglang_expr__operator.hpp"
 
 
 namespace pglang{
@@ -22,8 +21,6 @@ protected:
 
   std::string  get_identifier_literal();
 
-  Operator  get_operator();
-
 public:
   Tag(const char*  p=nullptr);
 
@@ -39,9 +36,6 @@ public:
   void  print() const;
 
 };
-
-
-bool  isoperator(int  c);
 
 
 }}

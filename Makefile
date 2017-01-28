@@ -56,11 +56,11 @@ ifeq ($(delay),1)
 endif
 
 
-OBJ =                          \
-  parser/pglang_parser__tag.o        \
-  parser/pglang_parser__token.o       \
-  parser/pglang_parser__block.o       \
-  parser/pglang_parser__stream.o      \
+OBJ =                                       \
+  parser/pglang_parser.o                    \
+  parser/pglang_parser__tag.o               \
+  parser/pglang_parser__token.o             \
+  parser/pglang_parser__stream.o            \
   parser/pglang_parser__stream_character.o  \
   parser/pglang_parser__stream_number.o     \
   parser/pglang_parser__unicode.o           \
@@ -86,13 +86,6 @@ OBJ =                          \
   expr/pglang_expr__literal.o       \
   expr/pglang_expr__initializer.o   \
   expr/pglang_expr.o                \
-  grammar/pglang_grammar.o              \
-  grammar/pglang_grammar__symbol.o      \
-  grammar/pglang_grammar__group.o       \
-  grammar/pglang_grammar__definition.o  \
-  grammar/pglang_grammar__book.o        \
-  grammar/pglang_grammar__node.o        \
-  grammar/pglang_grammar__stream.o      \
   vm/pglang_vm__memory.o          \
   vm/pglang_vm__binary.o          \
   vm/pglang_vm__instruction.o     \
@@ -102,12 +95,11 @@ OBJ =                          \
 all: $(OBJ) 
 #	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
 #	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
-#	$(CXX) -o test_grammar test_grammar.cpp $(OBJ) $(CXXFLAGS)
 	$(CXX) -o test_node test_node.cpp $(OBJ) $(CXXFLAGS)
 
 
 clean:
-	rm -f $(OBJ) test_type test_parser test_grammar test_node log
+	rm -f $(OBJ) test_type test_parser test_node log
 
 
 

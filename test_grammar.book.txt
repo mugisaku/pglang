@@ -1,5 +1,0 @@
-regular    = literal:identifier;
-option     = [literal]:identifier:[literal|comma];
-repetition = {literal}:identifier;
-
-object = regular|option;

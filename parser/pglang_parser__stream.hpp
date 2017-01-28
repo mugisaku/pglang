@@ -2,10 +2,8 @@
 #define PGLANG_PARSER__STREAM_HPP_INCLUDED
 
 
-#include<cstdint>
-#include<string>
 #include"pglang_parser__token.hpp"
-#include"pglang_expr__operator.hpp"
+#include"pglang_parser__tag.hpp"
 
 
 #ifndef report
@@ -26,6 +24,8 @@ struct invalid_number_literal{};
 class
 Stream: public Tag
 {
+  std::string  get_punctuation_string();
+
   std::string  get_string_literal();
   uint64_t     get_character_literal();
 

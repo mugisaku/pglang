@@ -31,7 +31,19 @@ Node::
 
 
 
-const std::vector<Node*>*  Node::operator->() const{return &children;}
+const NodeList&  Node::operator*()  const{return  children;}
+const NodeList*  Node::operator->() const{return &children;}
+
+
+bool
+Node::
+operator==(const char*  name) const
+{
+  return(definition.get_name() == name);
+}
+
+
+
 
 void
 Node::
@@ -98,6 +110,14 @@ check(const Book&  book)
 }
 
 
+const parser::Token&
+Node::
+get_token() const
+{
+  return *token;
+}
+
+
 void
 Node::
 print() const
@@ -136,6 +156,14 @@ print() const
           child->print();
         }
     }
+}
+
+
+Node::Reader
+Node::
+reader() const
+{
+  return Reader(*this);
 }
 
 
