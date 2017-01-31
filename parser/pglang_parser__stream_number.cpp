@@ -11,15 +11,63 @@ namespace parser{
 
 
 
+Token
+Stream::
+get_number_token()
+{
+  uint64_t  i = 0;
+
+    if(*pointer == '0')
+    {
+      ++pointer;
+
+      auto  next = *pointer;
+
+           if(next == 'x' || next == 'X'){  ++pointer;  i = get_hexadecimal_integer();}
+      else if(next == 'b' || next == 'B'){  ++pointer;  i =      get_binary_integer();}
+      else if(next == 'o' || next == 'O'){  ++pointer;  i =       get_octet_integer();}
+    }
+
+  else
+    {
+      i = get_decimal_integer();
+    }
+
+
+    if(*pointer == '.')
+    {
+      char*  endptr;
+
+      double  d = std::strtod(pointer,&endptr);
+
+        if(pointer == endptr)
+        {
+          printf("不正な浮動小数数表記です\n");
+
+          throw;
+        }
+
+
+      pointer = endptr;
+
+
+      return Token(i+d);
+    }
+
+
+  return Token(i);
+}
+
+
 uint64_t
 Stream::
-get_binary_integer_literal()
+get_binary_integer()
 {
   int  i;
 
     if(!get_binary_number(i))
     {
-      throw invalid_number_literal();
+      throw invalid_number();
     }
 
 
@@ -38,13 +86,13 @@ get_binary_integer_literal()
 
 uint64_t
 Stream::
-get_octet_integer_literal()
+get_octet_integer()
 {
   int  i;
 
     if(!get_octet_number(i))
     {
-      throw invalid_number_literal();
+      throw invalid_number();
     }
 
 
@@ -63,13 +111,13 @@ get_octet_integer_literal()
 
 uint64_t
 Stream::
-get_decimal_integer_literal()
+get_decimal_integer()
 {
   int  i;
 
     if(!get_decimal_number(i))
     {
-      throw invalid_number_literal();
+      throw invalid_number();
     }
 
 
@@ -88,13 +136,13 @@ get_decimal_integer_literal()
 
 uint64_t
 Stream::
-get_hexadecimal_integer_literal()
+get_hexadecimal_integer()
 {
   int  i;
 
     if(!get_hexadecimal_number(i))
     {
-      throw invalid_number_literal();
+      throw invalid_number();
     }
 
 

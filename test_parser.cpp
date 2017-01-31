@@ -4,6 +4,7 @@
 
 
 using namespace pglang;
+using namespace pglang::parser;
 
 
 void
@@ -50,9 +51,10 @@ main(int  argc, char**  argv)
 
       open(s,path);
 
-      parser::TokenString  tokstr(s.data());
+      parser::Block  blk(s);
 
-      printf("\n\n");
+
+      blk.print();
     }
 
 

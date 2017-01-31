@@ -57,9 +57,9 @@ endif
 
 
 OBJ =                                       \
-  parser/pglang_parser.o                    \
-  parser/pglang_parser__tag.o               \
   parser/pglang_parser__token.o             \
+  parser/pglang_parser__block.o             \
+  parser/pglang_parser__cursor.o            \
   parser/pglang_parser__stream.o            \
   parser/pglang_parser__stream_character.o  \
   parser/pglang_parser__stream_number.o     \
@@ -94,7 +94,7 @@ OBJ =                                       \
 
 all: $(OBJ) 
 #	$(CXX) -o test_type test_type.cpp $(OBJ) $(CXXFLAGS)
-#	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
+	$(CXX) -o test_parser test_parser.cpp $(OBJ) $(CXXFLAGS)
 	$(CXX) -o test_node test_node.cpp $(OBJ) $(CXXFLAGS)
 
 

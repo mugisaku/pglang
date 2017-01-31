@@ -1,6 +1,8 @@
 #include"pglang_parser__token.hpp"
+#include"pglang_parser__stream.hpp"
+#include<cctype>
+#include<cstring>
 #include<new>
-#include<cinttypes>
 
 
 
@@ -11,15 +13,14 @@ namespace parser{
 
 
 
-Token::Token(): kind(TokenKind::null){}
-Token::Token(const Tag&  tag_, uint64_t  i): tag(tag_), kind(TokenKind::integer){data.i = i;}
-Token::Token(const Tag&  tag_, double  f):   tag(tag_), kind(TokenKind::floating_point_number){data.f = f;}
-Token::Token(const Tag&  tag_, std::string&&  s, TokenKind  k): tag(tag_), kind(k){new(&data.s) std::string(std::move(s));}
-Token::Token(const Tag&  tag_, NullPtr&&  n): tag(tag_), kind(TokenKind::nullptr_){}
-Token::Token(const Tag&  tag_, True&&  t): tag(tag_), kind(TokenKind::true_){}
-Token::Token(const Tag&  tag_, False&&  f): tag(tag_), kind(TokenKind::false_){}
+Token::Token(TokenKind  k): kind(k){}
+Token::Token(uint64_t       i, TokenKind  k): kind(k){data.i = i;}
+Token::Token(std::string&&  s, TokenKind  k): kind(k){new(&data.string) std::string(std::move(s));}
+Token::Token(double       f): kind(TokenKind::floating_point_number){data.f = f;}
+Token::Token(Block&&    blk): kind(TokenKind::block){new(&data.block) Block(std::move(blk));}
+Token::Token(Operator&&  op): kind(TokenKind::operator_){data.operator_ = op;}
 Token::Token(      Token&&  rhs) noexcept: kind(TokenKind::null){*this = std::move(rhs);}
-Token::Token(const Token&   rhs)         : kind(TokenKind::null){*this = rhs;}
+Token::Token(const Token&   rhs) noexcept: kind(TokenKind::null){*this = rhs;}
 Token::~Token(){clear();}
 
 
@@ -31,33 +32,41 @@ operator=(Token&&  rhs) noexcept
 {
   clear();
 
-  kind = rhs.kind                  ;
-         rhs.kind = TokenKind::null;
+  std::swap(kind,rhs.kind);
 
-  tag = rhs.tag;
+  cursor = rhs.cursor;
 
     switch(kind)
     {
   case(TokenKind::null):
-      break;
+  case(TokenKind::semicolon):
+  case(TokenKind::newline):
+  case(TokenKind::character):
+  case(TokenKind::u8character):
+  case(TokenKind::u16character):
+  case(TokenKind::u32character):
   case(TokenKind::integer):
       data.i = rhs.data.i;
       break;
   case(TokenKind::floating_point_number):
       data.f = rhs.data.f;
       break;
+  case(TokenKind::unknown):
+      break;
   case(TokenKind::string):
-  case(TokenKind::identifier):
+  case(TokenKind::u8string):
   case(TokenKind::u16string):
   case(TokenKind::u32string):
-  case(TokenKind::pstring):
-      new(&data.s) std::string(std::move(rhs.data.s));
+  case(TokenKind::identifier):
+      new(&data.string) std::string(std::move(rhs.data.string));
       break;
-  case(TokenKind::nullptr_):
-  case(TokenKind::true_):
-  case(TokenKind::false_):
+  case(TokenKind::block):
+      new(&data.block) Block(std::move(rhs.data.block));
       break;
-    }
+  case(TokenKind::operator_):
+      data.operator_ = rhs.data.operator_;
+      break;
+	   }
 
 
   return *this;
@@ -66,46 +75,57 @@ operator=(Token&&  rhs) noexcept
 
 Token&
 Token::
-operator=(const Token&  rhs)
+operator=(const Token&  rhs) noexcept
 {
   clear();
 
   kind = rhs.kind;
-   tag = rhs.tag ;
+  cursor = rhs.cursor;
 
     switch(kind)
     {
   case(TokenKind::null):
-      break;
+  case(TokenKind::newline):
+  case(TokenKind::semicolon):
+  case(TokenKind::character):
+  case(TokenKind::u8character):
+  case(TokenKind::u16character):
+  case(TokenKind::u32character):
   case(TokenKind::integer):
       data.i = rhs.data.i;
       break;
   case(TokenKind::floating_point_number):
       data.f = rhs.data.f;
       break;
+  case(TokenKind::unknown):
+      break;
   case(TokenKind::string):
-  case(TokenKind::identifier):
+  case(TokenKind::u8string):
   case(TokenKind::u16string):
   case(TokenKind::u32string):
-  case(TokenKind::pstring):
-      new(&data.s) std::string(rhs.data.s);
+  case(TokenKind::identifier):
+      new(&data.string) std::string(rhs.data.string);
       break;
-  case(TokenKind::nullptr_):
-  case(TokenKind::true_):
-  case(TokenKind::false_):
+  case(TokenKind::block):
+      new(&data.block) Block(rhs.data.block);
       break;
-    }
+  case(TokenKind::operator_):
+      data.operator_ = rhs.data.operator_;
+      break;
+	   }
 
 
   return *this;
 }
 
 
-Token::
-operator bool() const
-{
-  return(kind != TokenKind::null);
-}
+const TokenData&  Token::operator*() const{return data;}
+const TokenData*  Token::operator->() const{return &data;}
+
+
+bool  Token::operator==(TokenKind  k) const{return(kind == k);}
+
+Token::operator bool() const{return(kind != TokenKind::null);}
 
 
 void
@@ -115,104 +135,113 @@ clear()
     switch(kind)
     {
   case(TokenKind::null):
+  case(TokenKind::semicolon):
+  case(TokenKind::newline):
+  case(TokenKind::character):
+  case(TokenKind::u8character):
+  case(TokenKind::u16character):
+  case(TokenKind::u32character):
   case(TokenKind::integer):
   case(TokenKind::floating_point_number):
-  case(TokenKind::nullptr_):
-  case(TokenKind::true_):
-  case(TokenKind::false_):
+  case(TokenKind::operator_):
+      break;
+  case(TokenKind::unknown):
       break;
   case(TokenKind::string):
-  case(TokenKind::identifier):
+  case(TokenKind::u8string):
   case(TokenKind::u16string):
   case(TokenKind::u32string):
-  case(TokenKind::pstring):
-      data.s.~basic_string();
+  case(TokenKind::identifier):
+      data.string.~basic_string();
       break;
-    }
+  case(TokenKind::block):
+      data.block.~Block();
+      break;
+   }
 
 
   kind = TokenKind::null;
 }
 
 
-const TokenData*  Token::operator->() const{return &data;}
-
-TokenKind  Token::get_kind() const{return kind;}
-
-
-const Tag&  Token::get_tag() const{return tag;}
-
-
-namespace{
 void
-prints(const std::string&  s)
+Token::
+set_cursor(const Cursor&  cur)
 {
-  printf("\"");
-
-    for(auto  c: s)
-    {
-        if(iscntrl(c))
-        {
-          printf("\\");
-
-            switch(c)
-            {
-          case('\n'): c = 'n';break;
-          case('\t'): c = 't';break;
-          case('\0'): c = '0';break;
-            }
-        }
-
-
-      printf("%c",c);
-    }
-
-
-  printf("\"");
+  cursor = cur;
 }
+
+
+const Cursor&
+Token::
+get_cursor() const
+{
+  return cursor;
 }
 
 
 void
 Token::
-print() const
+print(int  indent) const
 {
     switch(kind)
     {
   case(TokenKind::null):
-      printf("token(NULL)");
+      break;
+  case(TokenKind::character):
+      Stream::print_character(data.i);
+      break;
+  case(TokenKind::u8character):
+      printf("u8");
+      Stream::print_character(data.i);
+      break;
+  case(TokenKind::u16character):
+      printf("u");
+      Stream::print_character(data.i);
+      break;
+  case(TokenKind::u32character):
+      printf("U");
+      Stream::print_character(data.i);
+      break;
+  case(TokenKind::newline):
+      printf("\n");
+      break;
+  case(TokenKind::semicolon):
+      printf(";");
       break;
   case(TokenKind::integer):
-      printf("%" PRIu64,data.i);
+      printf("%llu",data.i);
       break;
   case(TokenKind::floating_point_number):
       printf("%f",data.f);
       break;
+  case(TokenKind::operator_):
+      printf("%s",data.operator_.codes);
+      break;
+  case(TokenKind::unknown):
+      break;
   case(TokenKind::string):
-      prints(data.s);
+      Stream::print_string(data.string);
+      break;
+  case(TokenKind::u8string):
+      printf("u8");
+      Stream::print_string(data.string);
       break;
   case(TokenKind::u16string):
       printf("u");
-      prints(data.s);
+      Stream::print_string(data.string);
       break;
   case(TokenKind::u32string):
       printf("U");
-      prints(data.s);
+      Stream::print_string(data.string);
       break;
   case(TokenKind::identifier):
-  case(TokenKind::pstring):
-      printf("%s",data.s.data());
+      printf("%s ",data.string.data());
       break;
-  case(TokenKind::nullptr_):
-      printf("nullptr");
+  case(TokenKind::block):
+      data.block.print(indent+1);
       break;
-  case(TokenKind::true_):
-      printf("true");
-      break;
-  case(TokenKind::false_):
-      printf("false");
-      break;
-    }
+   }
 }
 
 

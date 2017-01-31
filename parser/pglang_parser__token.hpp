@@ -2,9 +2,11 @@
 #define PGLANG_PARSER__TOKEN_HPP_INCLUDED
 
 
-#include<cstdint>
+#include<cstddef>
 #include<string>
-#include"pglang_parser__tag.hpp"
+#include"pglang_expr__operator.hpp"
+#include"pglang_parser__block.hpp"
+#include"pglang_parser__cursor.hpp"
 
 
 #ifndef report
@@ -21,40 +23,46 @@ TokenKind
 {
   null,
 
-  nullptr_,
-  true_,
-  false_,
-  integer,
-  floating_point_number,
+  semicolon,
+  newline,
+  character,
+  u8character,
+  u16character,
+  u32character,
   string,
+  u8string,
   u16string,
   u32string,
+
   identifier,
-  pstring,
+
+  operator_,
+  integer,
+  floating_point_number,
+
+  block,
+
+  unknown,
 
 };
-
-
-struct Block;
 
 
 union
 TokenData
 {
   uint64_t  i;
-  double    f;
+  double  f;
 
-  std::string  s;
+  Block  block;
+
+  std::string  string;
+
+  Operator  operator_;
 
    TokenData(){}
   ~TokenData(){}
 
 };
-
-
-struct NullPtr{};
-struct True{};
-struct False{};
 
 
 class
@@ -63,34 +71,35 @@ Token
   TokenKind  kind;
   TokenData  data;
 
-  Tag  tag;
+  Cursor  cursor;
 
 public:
-   Token();
-   Token(const Tag&  tag_, uint64_t  i);
-   Token(const Tag&  tag_, double  f);
-   Token(const Tag&  tag_, std::string&&  s, TokenKind  k);
-   Token(const Tag&  tag_, NullPtr&&  n);
-   Token(const Tag&  tag_, True&&  t);
-   Token(const Tag&  tag_, False&&  f);
-   Token(      Token&&  rhs) noexcept;
-   Token(const Token&   rhs)         ;
-  ~Token();
+  Token(TokenKind  k=TokenKind::null);
+  Token(uint64_t       i, TokenKind  k);
+  Token(std::string&&  s, TokenKind  k);
+  Token(double       f);
+  Token(Block&&    blk);
+  Token(Operator&&  op);
+  Token(      Token&&  rhs) noexcept;
+  Token(const Token&   rhs) noexcept;
+ ~Token(                  );
 
   Token&  operator=(      Token&&  rhs) noexcept;
-  Token&  operator=(const Token&   rhs)         ;
+  Token&  operator=(const Token&   rhs) noexcept;
 
-  operator  bool() const;
+  const TokenData&  operator*() const;
+  const TokenData*  operator->() const;
+
+  bool  operator==(TokenKind  k) const;
+
+  operator bool() const;
 
   void  clear();
 
-  const TokenData*  operator->() const;
+  void  set_cursor(const Cursor&  cur);
+  const Cursor&  get_cursor() const;
 
-  TokenKind  get_kind() const;
-
-  const Tag&  get_tag() const;
-
-  void  print() const;
+  void  print(int  indent) const;
 
 };
 

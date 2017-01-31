@@ -11,78 +11,12 @@ namespace parser{
 
 
 
-std::string
-Stream::
-get_punctuation_string()
-{
-  std::string  s;
-
-  auto  c = *pointer;
-
-    while(ispunct(c))
-    {
-      s.push_back(c);
-
-      c = *++pointer;
-    }
-
-
-  return std::move(s);
-}
-
-
-std::string
-Stream::
-get_string_literal()
-{
-  std::string  s;
-
-    for(;;)
-    {
-      auto  c = *pointer;
-
-        if(c == '\"')
-        {
-          ++pointer;
-
-          break;
-        }
-
-      else
-        if(c == '\\')
-        {
-          ++pointer;
-
-          auto  uc = get_escchar();
-
-          s.push_back(uc);
-        }
-
-      else
-        if(iscntrl(c))
-        {
-          printf("文字列の途中に制御文字が現れました\n");
-
-          throw invalid_string_literal();
-        }
-
-      else
-        {
-          ++pointer;
-
-          s.push_back(c);
-        }
-    }
-
-
-  return std::move(s);
-}
-
-
 uint64_t
 Stream::
-get_character_literal()
+get_character()
 {
+  pointer = std::strchr(pointer,'\'')+1;
+
   uint64_t  c = *pointer++;
 
     if(c == '\\')
@@ -95,7 +29,7 @@ get_character_literal()
 
     if(*pointer != '\'')
     {
-      throw invalid_character_literal();
+      throw invalid_character();
     }
 
 
@@ -143,7 +77,7 @@ get_unichar16()
         {
           printf("error");
 
-          throw invalid_unicode_literal();
+          throw invalid_unicode();
         }
 
 
@@ -168,7 +102,7 @@ get_unichar32()
 
         if(!get_hexadecimal_number(t))
         {
-          throw invalid_unicode_literal();
+          throw invalid_unicode();
         }
 
 
