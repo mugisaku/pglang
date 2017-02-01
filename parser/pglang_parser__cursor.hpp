@@ -31,14 +31,12 @@ public:
   char  operator*() const;
 
   void  advance();
-  void  newline();
-
-  void  skip_spaces();
 
   void  print() const;
 
-  static void  print_character(int  c);
-  static void  print_string(const std::string&  s);
+  static void  print_character(int  c, int  n=1);
+  static void  print_character_literal(int  c);
+  static void  print_string_literal(const std::string&  s);
 
 };
 

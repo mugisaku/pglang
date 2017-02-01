@@ -51,11 +51,11 @@ get_number_token()
       pointer = endptr;
 
 
-      return Token(i+d);
+      return Token(static_cast<double>(i+d));
     }
 
 
-  return Token(i);
+  return Token(i,TokenKind::integer);
 }
 
 

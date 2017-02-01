@@ -39,8 +39,10 @@ operator=(Token&&  rhs) noexcept
     switch(kind)
     {
   case(TokenKind::null):
-  case(TokenKind::semicolon):
+  case(TokenKind::tab):
   case(TokenKind::newline):
+  case(TokenKind::space):
+  case(TokenKind::semicolon):
   case(TokenKind::character):
   case(TokenKind::u8character):
   case(TokenKind::u16character):
@@ -85,7 +87,9 @@ operator=(const Token&  rhs) noexcept
     switch(kind)
     {
   case(TokenKind::null):
+  case(TokenKind::tab):
   case(TokenKind::newline):
+  case(TokenKind::space):
   case(TokenKind::semicolon):
   case(TokenKind::character):
   case(TokenKind::u8character):
@@ -135,8 +139,10 @@ clear()
     switch(kind)
     {
   case(TokenKind::null):
-  case(TokenKind::semicolon):
+  case(TokenKind::tab):
   case(TokenKind::newline):
+  case(TokenKind::space):
+  case(TokenKind::semicolon):
   case(TokenKind::character):
   case(TokenKind::u8character):
   case(TokenKind::u16character):
@@ -188,26 +194,32 @@ print(int  indent) const
     {
   case(TokenKind::null):
       break;
-  case(TokenKind::character):
-      Stream::print_character(data.i);
-      break;
-  case(TokenKind::u8character):
-      printf("u8");
-      Stream::print_character(data.i);
-      break;
-  case(TokenKind::u16character):
-      printf("u");
-      Stream::print_character(data.i);
-      break;
-  case(TokenKind::u32character):
-      printf("U");
-      Stream::print_character(data.i);
+  case(TokenKind::tab):
+      Stream::print_character('\t',data.i);
       break;
   case(TokenKind::newline):
-      printf("\n");
+      Stream::print_character('\n',data.i);
+      break;
+  case(TokenKind::space):
+      Stream::print_character(' ',data.i);
       break;
   case(TokenKind::semicolon):
       printf(";");
+      break;
+  case(TokenKind::character):
+      Stream::print_character_literal(data.i);
+      break;
+  case(TokenKind::u8character):
+      printf("u8");
+      Stream::print_character_literal(data.i);
+      break;
+  case(TokenKind::u16character):
+      printf("u");
+      Stream::print_character_literal(data.i);
+      break;
+  case(TokenKind::u32character):
+      printf("U");
+      Stream::print_character_literal(data.i);
       break;
   case(TokenKind::integer):
       printf("%llu",data.i);
@@ -221,19 +233,19 @@ print(int  indent) const
   case(TokenKind::unknown):
       break;
   case(TokenKind::string):
-      Stream::print_string(data.string);
+      Stream::print_string_literal(data.string);
       break;
   case(TokenKind::u8string):
       printf("u8");
-      Stream::print_string(data.string);
+      Stream::print_string_literal(data.string);
       break;
   case(TokenKind::u16string):
       printf("u");
-      Stream::print_string(data.string);
+      Stream::print_string_literal(data.string);
       break;
   case(TokenKind::u32string):
       printf("U");
-      Stream::print_string(data.string);
+      Stream::print_string_literal(data.string);
       break;
   case(TokenKind::identifier):
       printf("%s ",data.string.data());

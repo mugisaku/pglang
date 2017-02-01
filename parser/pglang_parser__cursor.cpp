@@ -51,37 +51,6 @@ advance()
 }
 
 
-void
-Cursor::
-newline()
-{
-  base_pointer = pointer;
-
-  row_number += 1;
-}
-
-
-void
-Cursor::
-skip_spaces()
-{
-    while(*pointer)
-    {
-      auto  c = *pointer;
-
-        if((c ==  ' ') ||
-           (c == '\t') ||
-           (c == '\r'))
-        {
-          pointer += 1;
-        }
-
-      else
-        {
-          break;
-        }
-    }
-}
 
 
 namespace{
@@ -102,9 +71,21 @@ printc(int  c)
 }
 }
 
+
 void
 Cursor::
-print_character(int  c)
+print_character(int  c, int  n)
+{
+    while(n--)
+    {
+      printf("%c",c);
+    }
+}
+
+
+void
+Cursor::
+print_character_literal(int  c)
 {
   printf("\'");
 
@@ -116,7 +97,7 @@ print_character(int  c)
 
 void
 Cursor::
-print_string(const std::string&  s)
+print_string_literal(const std::string&  s)
 {
   auto  begin = s.cbegin();
   auto    end = s.cend();

@@ -50,6 +50,7 @@ Stream: public Cursor
 
   Token  internal__get_block_token();
   Token  internal__get_nonblock_token();
+  Token  internal__get_whitespace_token();
 
 public:
   Stream(const std::string&  s);

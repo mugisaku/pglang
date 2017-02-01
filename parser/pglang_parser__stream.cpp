@@ -24,6 +24,53 @@ Cursor(s)
 
 Token
 Stream::
+internal__get_whitespace_token()
+{
+  auto  c = *pointer;
+
+    if((c == '\n') ||
+       (c == '\r') ||
+       (c == '\t') ||
+       (c ==  ' '))
+    {
+      uint64_t  i = 0;
+
+      const bool  isnl = (c == '\n');
+
+        while(*pointer == c)
+        {
+          ++pointer;
+          ++i;
+
+            if(isnl)
+            {
+              ++row_number;
+            }
+        }
+
+
+        if(isnl)
+        {
+          base_pointer = pointer;
+        }
+
+
+        switch(c)
+        {
+      case(' ' ): return Token(i,TokenKind::space);
+      case('\n'): return Token(i,TokenKind::newline);
+      case('\t'): return Token(i,TokenKind::tab);
+      case('\r'): return Token(i,TokenKind::newline);
+        }
+    }
+
+
+  return Token();
+}
+
+
+Token
+Stream::
 internal__get_block_token()
 {
   auto  c = *pointer;
@@ -84,7 +131,6 @@ internal__get_nonblock_token()
   else if(c == '\''){return Token(get_character(),TokenKind::character);}
   else if(c == '\"'){return Token(get_string(),TokenKind::string);}
   else if(c == ';'){  advance();  return Token(TokenKind::semicolon);}
-  else if(c == '\n'){  advance();  return Token(TokenKind::newline);}
   else if(std::strncmp(pointer,"u8\'",3) == 0){return Token(get_character(),TokenKind::u8character);}
   else if(std::strncmp(pointer,"u8\"",3) == 0){return Token(get_string(),TokenKind::u8string);}
   else if(std::strncmp(pointer,"u\'",2) == 0){return Token(get_character(),TokenKind::u16character);}
@@ -117,19 +163,22 @@ Token
 Stream::
 get_token()
 {
-  skip_spaces();
-
   const Cursor  begin = *this;
 
   Token  tok;
 
     if(*pointer)
     {
-      tok = internal__get_block_token();
+      tok = internal__get_whitespace_token();
 
         if(!tok)
         {
-          tok = internal__get_nonblock_token();
+          tok = internal__get_block_token();
+
+            if(!tok)
+            {
+              tok = internal__get_nonblock_token();
+            }
         }
     }
 

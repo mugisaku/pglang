@@ -51,8 +51,6 @@ build(Stream&  st, char  opening)
 
     for(;;)
     {
-      st.skip_spaces();
-
       auto  c = *st;
 
         if((c == ')') ||

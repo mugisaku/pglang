@@ -23,8 +23,10 @@ TokenKind
 {
   null,
 
-  semicolon,
+  tab,
   newline,
+  space,
+  semicolon,
   character,
   u8character,
   u16character,
